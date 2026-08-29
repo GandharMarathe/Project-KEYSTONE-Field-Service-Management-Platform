@@ -1,4 +1,4 @@
-package com.zidio.keystone.dto.user;
+package com.zidio.keystone.dto;
 
 import com.zidio.keystone.domain.enums.Role;
 
