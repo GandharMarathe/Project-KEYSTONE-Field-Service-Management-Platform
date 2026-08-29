@@ -1,0 +1,17 @@
+package com.zidio.keystone.dto.user;
+
+import com.zidio.keystone.domain.enums.Role;
+
+import java.time.OffsetDateTime;
+
+public record UserResponse(
+        Long id,
+        String email,
+        String firstName,
+        String lastName,
+        Role role,
+        boolean enabled,
+        OffsetDateTime createdAt,
+        OffsetDateTime updatedAt
+) {
+}
