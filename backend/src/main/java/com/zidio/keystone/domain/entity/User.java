@@ -1,4 +1,4 @@
-package com.zidio.keystone.domain,entity;
+package com.zidio.keystone.domain.entity;
 
 import com.zidio.keystone.domain.enums.Role;
 import jakarta.persistence.*;
@@ -13,7 +13,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, lenghth = 255)
+    @Column(nullable = false, unique = true, length = 255)
     private String email;
 
     @Column(name = "password_hash", nullable = false, length = 255)
@@ -35,7 +35,7 @@ public class User {
     @Column(name = "created_at", nullable = false)
     private OffsetDateTime createdAt;
 
-    @column(name = "updated_at", nullable = false)
+    @Column(name = "updated_at", nullable = false)
     private OffsetDateTime updatedAt;
 
     public  User() {
@@ -58,7 +58,7 @@ public class User {
     }
 
     public String getEmail() {
-        return Email;
+        return email;
     }
 
     public void setEmail(String email) {
