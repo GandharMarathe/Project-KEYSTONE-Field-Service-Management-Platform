@@ -2,7 +2,6 @@ package com.zidio.keystone.service;
 
 import com.zidio.keystone.domain.entity.User;
 import com.zidio.keystone.repository.UserRepository;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,10 +11,14 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(
+            UserRepository userRepository,
+            PasswordEncoder passwordEncoder
+    ) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public boolean existsByEmail(String email) {
@@ -38,7 +41,7 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
-    public boolean matchesPassword(String rawPassword, String passwordHash) {
-        return passwordEncoder.matches(rawPassword, passwordHash);
+    public boolean matchesPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 }
