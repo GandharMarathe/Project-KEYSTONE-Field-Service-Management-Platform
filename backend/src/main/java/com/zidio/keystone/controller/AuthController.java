@@ -3,6 +3,7 @@ package com.zidio.keystone.controller;
 import com.zidio.keystone.dto.LoginRequest;
 import com.zidio.keystone.dto.LoginResponse;
 import com.zidio.keystone.service.AuthService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,7 +19,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(
-            @RequestBody LoginRequest request) {
+            @Valid @RequestBody LoginRequest request) {
 
         String token = authService.login(
                 request.email(),
@@ -30,3 +31,5 @@ public class AuthController {
         );
     }
 }
+
+
