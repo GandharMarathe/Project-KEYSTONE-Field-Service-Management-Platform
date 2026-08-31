@@ -29,13 +29,20 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
+                        .requestMatchers("/api/users/**").hasAnyRole(
+                                "CUSTOMER",
+                                "TECHNICIAN",
+                                "DISPATCHER",
+                                "MANAGER"
+                        )
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(
-                        jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class
+                        jwtAuthenticationFilter,
+                        UsernamePasswordAuthenticationFilter.class
                 );
 
-            return http.build();
+        return http.build();
     }
 }
 
