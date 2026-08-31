@@ -4,6 +4,7 @@ import com.zidio.keystone.domain.entity.User;
 import com.zidio.keystone.dto.CreateUserRequest;
 import com.zidio.keystone.dto.UserResponse;
 import com.zidio.keystone.service.UserService;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PreAuthorize("hasAnyRole('MANAGER, 'DISPATCHER')")
     @PostMapping
     public ResponseEntity<UserResponse> createUser(
             @RequestBody CreateUserRequest request) {
