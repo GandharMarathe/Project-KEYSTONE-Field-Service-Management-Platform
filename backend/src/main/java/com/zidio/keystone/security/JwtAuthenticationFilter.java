@@ -1,5 +1,7 @@
 package com.zidio.keystone.security;
 
+import com.zidio.keystone.domain.entity.User;
+import com.zidio.keystone.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,9 +18,14 @@ import java.util.Collections;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final UserService userService;
 
-    public JwtAuthenticationFilter(JwtService jwtService) {
+    public JwtAuthenticationFilter(
+            JwtService jwtService,
+            UserService userService
+    ) {
         this.jwtService = jwtService;
+        this.userService = userService;
     }
 
     @Override
@@ -36,20 +43,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = authorizationHeader.substring(7);
 
             if (jwtService.isTokenValid(token)) {
+
                 String email = jwtService.extractEmail(token);
 
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                email,
-                                null,
-                                Collections.emptyList()
-                        );
+                User user = userService.getUserByEmail(email)
+                        .orElse(null);
 
-                SecurityContextHolder.getContext()
-                        .setAuthentication(authentication);
+                if (user != null && user.isEnabled()) {
+
+                    UsernamePasswordAuthenticationToken authentication =
+                            new UsernamePasswordAuthenticationToken(
+                                    user.getEmail(),
+                                    null,
+                                    Collections.singletonList(
+                                            () -> "ROLE_" + user.getRole().name()
+                                    )
+                            );
+
+                    SecurityContextHolder.getContext()
+                            .setAuthentication(authentication);
+                }
             }
         }
 
         filterChain.doFilter(request, response);
     }
 }
+
