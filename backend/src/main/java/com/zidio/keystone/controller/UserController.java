@@ -21,7 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PreAuthorize("hasAnyRole('MANAGER, 'DISPATCHER')")
+    @PreAuthorize("hasAnyRole('MANAGER', 'DISPATCHER')")
     @PostMapping
     public ResponseEntity<UserResponse> createUser(
             @RequestBody CreateUserRequest request) {
