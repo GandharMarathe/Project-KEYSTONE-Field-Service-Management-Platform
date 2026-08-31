@@ -8,6 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
 
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('MANAGER', 'DISPATCHER')")
     @PostMapping
     public ResponseEntity<UserResponse> createUser(
-            @RequestBody CreateUserRequest request) {
+            @Valid @RequestBody CreateUserRequest request) {
 
         if (userService.existsByEmail(request.email())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
