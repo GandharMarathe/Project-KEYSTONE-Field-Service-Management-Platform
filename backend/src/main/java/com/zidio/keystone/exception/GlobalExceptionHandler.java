@@ -12,7 +12,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public Map<String, String> handleUllegalArgumentException(
+    public Map<String, String> handleIllegalArgumentException(
             IllegalArgumentException exception) {
 
         return Map.of(
