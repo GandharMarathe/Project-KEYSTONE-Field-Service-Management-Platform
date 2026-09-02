@@ -1,5 +1,6 @@
 package com.zidio.keystone.service;
 
+import com.zidio.keystone.exception.ResourceNotFoundException;
 import com.zidio.keystone.domain.entity.WorkOrder;
 import com.zidio.keystone.repository.WorkOrderRepository;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,15 @@ public class WorkOrderService {
 
     public Optional<WorkOrder> getWorkOrderById(Long id) {
         return workOrderRepository.findById(id);
+    }
+
+    public WorkOrder getWorkOrderByIdOrThrow(Long id) {
+        return workOrderRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Work order not found with id: " + id
+                        )
+                );
     }
 
     public Optional<WorkOrder> getWorkOrderByCode(String code) {
