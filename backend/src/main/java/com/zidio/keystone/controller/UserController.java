@@ -4,13 +4,10 @@ import com.zidio.keystone.domain.entity.User;
 import com.zidio.keystone.dto.CreateUserRequest;
 import com.zidio.keystone.dto.UserResponse;
 import com.zidio.keystone.service.UserService;
-import org.springframework.security.access.prepost.PreAuthorize;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
@@ -22,11 +19,10 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PreAuthorize("hasAnyRole('MANAGER', 'DISPATCHER')")
     @PostMapping
     public ResponseEntity<UserResponse> createUser(
-            @Valid @RequestBody CreateUserRequest request) {
-
+            @Valid @RequestBody CreateUserRequest request
+    ) {
         if (userService.existsByEmail(request.email())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).build();
         }
@@ -37,6 +33,7 @@ public class UserController {
         user.setFirstName(request.firstName());
         user.setLastName(request.lastName());
         user.setRole(request.role());
+        user.setEnabled(true);
 
         User savedUser = userService.createUser(user);
 
@@ -46,13 +43,12 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable Long id) {
-
-        Optional<User> user = userService.getUserById(id);
-
-        return user
-                .map(value -> ResponseEntity.ok(toResponse(value)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<UserResponse> getUser(
+            @PathVariable Long id
+    ) {
+        return ResponseEntity.ok(
+                toResponse(userService.getUserByIdOrThrow(id))
+        );
     }
 
     private UserResponse toResponse(User user) {
@@ -68,3 +64,5 @@ public class UserController {
         );
     }
 }
+
+
