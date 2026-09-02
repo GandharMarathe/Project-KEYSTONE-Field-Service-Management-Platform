@@ -1,5 +1,6 @@
 package com.zidio.keystone.service;
 
+import com.zidio.keystone.exception.ResourceNotFoundException;
 import com.zidio.keystone.domain.entity.Site;
 import com.zidio.keystone.repository.SiteRepository;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,15 @@ public class SiteService {
 
     public Optional<Site> getSiteById(Long id) {
         return siteRepository.findById(id);
+    }
+
+    public Site getSiteByIdOrThrow(Long id) {
+        return siteRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Site not found with id: " + id
+                        )
+                );
     }
 
     public List<Site> getAllSites() {
