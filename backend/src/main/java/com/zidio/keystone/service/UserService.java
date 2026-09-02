@@ -2,6 +2,7 @@ package com.zidio.keystone.service;
 
 import com.zidio.keystone.domain.entity.User;
 import com.zidio.keystone.repository.UserRepository;
+import com.zidio.keystone.exception.ResourceNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -44,4 +45,15 @@ public class UserService {
     public boolean matchesPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
+
+    public User getUserByIdOrThrow(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "User not found with id: " + id
+                        )
+                );
+    }
 }
+
+
