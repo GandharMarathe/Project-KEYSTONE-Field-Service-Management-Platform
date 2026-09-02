@@ -1,5 +1,6 @@
 package com.zidio.keystone.service;
 
+import com.zidio.keystone.exception.ResourceNotFoundException;
 import com.zidio.keystone.domain.entity.Customer;
 import com.zidio.keystone.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
@@ -38,6 +39,15 @@ public class CustomerService {
 
     public boolean existsById(Long id) {
         return customerRepository.existsById(id);
+    }
+
+    public Customer getCustomerByIdOrThrow(Long id) {
+        return customerRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Customer not found with id: " + id
+                        )
+                );
     }
 }
 
