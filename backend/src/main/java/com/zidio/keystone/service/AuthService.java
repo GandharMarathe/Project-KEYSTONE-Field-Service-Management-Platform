@@ -1,6 +1,7 @@
 package com.zidio.keystone.service;
 
 import com.zidio.keystone.domain.entity.User;
+import com.zidio.keystone.dto.auth.LoginResponse;
 import com.zidio.keystone.security.JwtService;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,7 @@ public class AuthService {
         this.jwtService = jwtService;
     }
 
-    public String login(String email, String password) {
+    public LoginResponse login(String email, String password) {
 
         User user = userService.getUserByEmail(email)
                 .orElseThrow(() ->
@@ -36,6 +37,14 @@ public class AuthService {
             throw new IllegalArgumentException("Invalid email or password");
         }
 
-        return jwtService.generateToken(user.getEmail());
+        String token = jwtService.generateToken(user.getEmail());
+
+        return new LoginResponse(
+                token,
+                "Bearer",
+                user.getId(),
+                user.getEmail(),
+                user.getRole().name()
+        );
     }
 }
