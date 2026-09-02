@@ -1,5 +1,6 @@
 package com.zidio.keystone.service;
 
+import com.zidio.keystone.exception.ResourceNotFoundException;
 import com.zidio.keystone.domain.entity.Part;
 import com.zidio.keystone.repository.PartRepository;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,15 @@ public class PartService {
 
     public Optional<Part> getPartById(Long id) {
         return partRepository.findById(id);
+    }
+
+    public Part getPartByIdOrThrow(Long id) {
+        return partRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException(
+                                "Part not found with id: " + id
+                        )
+                );
     }
 
     public Optional<Part> getPartByPartNumber(String partNumber) {
