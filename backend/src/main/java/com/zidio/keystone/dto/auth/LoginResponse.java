@@ -61,7 +61,7 @@ public class LoginResponse {
         return role;
     }
 
-    public void setRole(String Role) {
+    public void setRole(String role) {
         this.role = role;
     }
 }
