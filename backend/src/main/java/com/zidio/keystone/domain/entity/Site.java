@@ -8,7 +8,7 @@ import java.time.OffsetDateTime;
 @Table(
         name = "sites",
         indexes = {
-                @Index(name = "idx_sites_customer_id", columnList = "cistomer_id"),
+                @Index(name = "idx_sites_customer_id", columnList = "customer_id"),
                 @Index(name = "idx_sites_name", columnList = "name")
         }
 )
@@ -124,7 +124,7 @@ public class Site {
         return postalCode;
     }
 
-    public void setPostalCode() {
+    public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
     }
 
