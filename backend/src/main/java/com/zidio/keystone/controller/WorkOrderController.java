@@ -2,9 +2,11 @@ package com.zidio.keystone.controller;
 
 import com.zidio.keystone.domain.entity.Customer;
 import com.zidio.keystone.domain.entity.Site;
+import com.zidio.keystone.domain.entity.User;
 import com.zidio.keystone.domain.entity.WorkOrder;
 import com.zidio.keystone.service.CustomerService;
 import com.zidio.keystone.service.SiteService;
+import com.zidio.keystone.service.UserService;
 import com.zidio.keystone.service.WorkOrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -20,15 +22,18 @@ public class WorkOrderController {
     private final WorkOrderService workOrderService;
     private final CustomerService customerService;
     private final SiteService siteService;
+    private final UserService userService;
 
     public WorkOrderController(
             WorkOrderService workOrderService,
             CustomerService customerService,
-            SiteService siteService
+            SiteService siteService,
+            UserService userService
     ) {
         this.workOrderService = workOrderService;
         this.customerService = customerService;
         this.siteService = siteService;
+        this.userService = userService;
     }
 
     @PostMapping
@@ -101,6 +106,17 @@ public class WorkOrderController {
         existing.setDescription(workOrder.getDescription());
         existing.setPriority(workOrder.getPriority());
         existing.setSlaDueAt(workOrder.getSlaDueAt());
+
+        if(workOrder.getStatus() != null) {
+            existing.setStatus(workOrder.getStatus());
+        }
+
+        if(workOrder.getAssignedTo() != null) {
+            User technician = userService.getUserByIdOrThrow(
+                    workOrder.getAssignedTo().getId()
+            );
+            existing.setAssignedTo(technician);
+        }
 
         return ResponseEntity.ok(
                 workOrderService.updateWorkOrder(existing)
