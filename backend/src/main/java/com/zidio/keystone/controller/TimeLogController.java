@@ -1,10 +1,15 @@
 package com.zidio.keystone.controller;
 
 import com.zidio.keystone.domain.entity.TimeLog;
+import com.zidio.keystone.domain.entity.User;
+import com.zidio.keystone.domain.entity.WorkOrder;
 import com.zidio.keystone.service.TimeLogService;
+import com.zidio.keystone.service.UserService;
+import com.zidio.keystone.service.WorkOrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,15 +19,39 @@ import java.util.List;
 public class TimeLogController {
 
     private final TimeLogService timeLogService;
+    private final WorkOrderService workOrderService;
+    private final UserService userService;
 
-    public TimeLogController(TimeLogService timeLogService) {
+    public TimeLogController(
+            TimeLogService timeLogService,
+            WorkOrderService workOrderService,
+            UserService userService
+    ) {
         this.timeLogService = timeLogService;
+        this.workOrderService = workOrderService;
+        this.userService = userService;
     }
 
     @PostMapping
     public ResponseEntity<TimeLog> createTimeLog(
             @Valid @RequestBody TimeLog timeLog
     ) {
+
+        WorkOrder workOrder = workOrderService.getWorkOrderByIdOrThrow(
+                timeLog.getWorkOrder().getId()
+        );
+
+        String currentUserEmail = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+        User technician = userService.getUserByEmail(currentUserEmail)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Authenticated user not found: " + currentUserEmail
+                ));
+
+        timeLog.setWorkOrder(workOrder);
+        timeLog.setTechnician(technician);
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(timeLogService.createTimeLog(timeLog));
