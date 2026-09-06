@@ -1,6 +1,7 @@
 package com.zidio.keystone.controller;
 
 import com.zidio.keystone.domain.entity.User;
+import com.zidio.keystone.exception.ResourceNotFoundException;
 import com.zidio.keystone.domain.entity.WorkOrder;
 import com.zidio.keystone.domain.entity.WorkOrderStatusHistory;
 import com.zidio.keystone.service.UserService;
@@ -64,7 +65,7 @@ public class WorkOrderStatusHistoryController {
         WorkOrderStatusHistory history =
                 historyService.getHistoryById(id)
                         .orElseThrow(() ->
-                                new IllegalArgumentException(
+                                new ResourceNotFoundException(
                                         "Status history not found with id: " + id
                                 )
                         );

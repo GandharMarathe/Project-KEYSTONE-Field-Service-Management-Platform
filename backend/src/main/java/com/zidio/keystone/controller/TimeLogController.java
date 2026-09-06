@@ -1,6 +1,7 @@
 package com.zidio.keystone.controller;
 
 import com.zidio.keystone.domain.entity.TimeLog;
+import com.zidio.keystone.exception.ResourceNotFoundException;
 import com.zidio.keystone.domain.entity.User;
 import com.zidio.keystone.domain.entity.WorkOrder;
 import com.zidio.keystone.service.TimeLogService;
@@ -63,7 +64,7 @@ public class TimeLogController {
     ) {
         TimeLog timeLog = timeLogService.getTimeLogById(id)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
+                        new ResourceNotFoundException(
                                 "Time log not found with id: " + id
                         )
                 );

@@ -2,6 +2,7 @@ package com.zidio.keystone.controller;
 
 import com.zidio.keystone.domain.entity.Part;
 import com.zidio.keystone.domain.entity.PartUsage;
+import com.zidio.keystone.exception.ResourceNotFoundException;
 import com.zidio.keystone.domain.entity.User;
 import com.zidio.keystone.domain.entity.WorkOrder;
 import com.zidio.keystone.service.PartService;
@@ -71,7 +72,7 @@ public class PartUsageController {
     ) {
         PartUsage partUsage = partUsageService.getPartUsageById(id)
                 .orElseThrow(() ->
-                        new IllegalArgumentException(
+                        new ResourceNotFoundException(
                                 "Part usage not found with id: " + id
                         )
                 );
