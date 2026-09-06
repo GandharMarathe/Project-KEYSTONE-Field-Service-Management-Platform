@@ -23,6 +23,10 @@ public class PartController {
     public ResponseEntity<Part> createPart(
             @Valid @RequestBody Part part
     ) {
+        if (partService.existsByPartNumber(part.getPartNumber())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(partService.createPart(part));
@@ -71,6 +75,11 @@ public class PartController {
             @Valid @RequestBody Part part
     ) {
         Part existing = partService.getPartByIdOrThrow(id);
+
+        boolean partNumberChanged = !existing.getPartNumber().equals(part.getPartNumber());
+        if (partNumberChanged && partService.existsByPartNumber(part.getPartNumber())) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
 
         existing.setPartNumber(part.getPartNumber());
         existing.setName(part.getName());
