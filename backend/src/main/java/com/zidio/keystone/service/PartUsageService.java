@@ -1,8 +1,10 @@
 package com.zidio.keystone.service;
 
+import com.zidio.keystone.domain.entity.Part;
 import com.zidio.keystone.domain.entity.PartUsage;
 import com.zidio.keystone.repository.PartUsageRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,12 +13,30 @@ import java.util.Optional;
 public class PartUsageService {
 
     private final PartUsageRepository partUsageRepository;
+    private final PartService partService;
 
-    public PartUsageService(PartUsageRepository partUsageRepository) {
+    public PartUsageService(
+            PartUsageRepository partUsageRepository,
+            PartService partService
+    ) {
         this.partUsageRepository = partUsageRepository;
+        this.partService = partService;
     }
 
+    @Transactional
     public PartUsage createPartUsage(PartUsage partUsage) {
+        Part part = partUsage.getPart();
+
+        if (partUsage.getQuantity() > part.getStockQuantity()) {
+            throw new IllegalArgumentException(
+                    "Insufficient stock for part " + part.getPartNumber()
+                        + ": requested " + partUsage.getQuantity()
+                        + ", available " + part.getStockQuantity()
+            );
+        }
+
+        part.setStockQuantity(part.getStockQuantity() - partUsage.getQuantity());
+        partService.updatePart(part);
         return partUsageRepository.save(partUsage);
     }
 

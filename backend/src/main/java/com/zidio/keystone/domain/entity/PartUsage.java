@@ -19,11 +19,11 @@ public class PartUsage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "work_order_id", nullable = false)
     private WorkOrder workOrder;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "part_id", nullable = false)
     private Part part;
 
@@ -36,7 +36,7 @@ public class PartUsage {
     @Column(columnDefinition = "TEXT")
     private String note;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "used_by", nullable = false)
     private User usedBy;
 
