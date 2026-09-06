@@ -4,10 +4,13 @@ import com.zidio.keystone.domain.entity.Customer;
 import com.zidio.keystone.domain.entity.Site;
 import com.zidio.keystone.domain.entity.User;
 import com.zidio.keystone.domain.entity.WorkOrder;
+import com.zidio.keystone.domain.enums.Role;
 import com.zidio.keystone.service.CustomerService;
 import com.zidio.keystone.service.SiteService;
 import com.zidio.keystone.service.UserService;
 import com.zidio.keystone.service.WorkOrderService;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -101,17 +104,46 @@ public class WorkOrderController {
     ) {
         WorkOrder existing = workOrderService.getWorkOrderByIdOrThrow(id);
 
+        String currentUserEmail = SecurityContextHolder.getContext()
+                .getAuthentication()
+                .getName();
+        User currentUser = userService.getUserByEmail(currentUserEmail)
+                .orElseThrow(() -> new IllegalStateException(
+                        "Authenticated user not found: " + currentUserEmail
+                ));
+
+        if (currentUser.getRole() == Role.TECHNICIAN) {
+            boolean isOwnJob = existing.getAssignedTo() != null
+                    && existing.getAssignedTo().getId().equals(currentUser.getId());
+
+            if (!isOwnJob) {
+                throw new AccessDeniedException(
+                        "Technicians may only update work orders assigned to them"
+                );
+            }
+
+            // Technicians may only move status on their own job -- not reassign,
+            // reprioritize, or edit the title/description/SLA.
+            if (workOrder.getStatus() != null) {
+                existing.setStatus(workOrder.getStatus());
+            }
+
+            return ResponseEntity.ok(
+                    workOrderService.updateWorkOrder(existing)
+            );
+        }
+
         existing.setCode(workOrder.getCode());
         existing.setTitle(workOrder.getTitle());
         existing.setDescription(workOrder.getDescription());
         existing.setPriority(workOrder.getPriority());
         existing.setSlaDueAt(workOrder.getSlaDueAt());
 
-        if(workOrder.getStatus() != null) {
+        if (workOrder.getStatus() != null) {
             existing.setStatus(workOrder.getStatus());
         }
 
-        if(workOrder.getAssignedTo() != null) {
+        if (workOrder.getAssignedTo() != null) {
             User technician = userService.getUserByIdOrThrow(
                     workOrder.getAssignedTo().getId()
             );
