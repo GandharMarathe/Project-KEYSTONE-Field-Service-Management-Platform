@@ -1,7 +1,9 @@
 package com.zidio.keystone.domain.entity;
 
 import jakarta.persistence.*;
-
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -18,12 +20,15 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank
+    @Size(max = 200)
     @Column(nullable = false, length = 200)
     private String name;
-
+    @Email
+    @Size(max = 255)
     @Column(length = 255)
     private String email;
-
+    @Size(max = 50)
     @Column(length = 50)
     private String phone;
 

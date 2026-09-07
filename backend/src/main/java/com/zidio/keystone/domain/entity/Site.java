@@ -1,6 +1,9 @@
 package com.zidio.keystone.domain.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.OffsetDateTime;
 
@@ -19,28 +22,40 @@ public class Site {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
+    @NotBlank
+    @Size(max = 200)
     @Column(nullable  = false, length = 200)
     private String name;
 
+    @NotBlank
+    @Size(max = 255)
     @Column(name = "address_line1", nullable = false, length = 255)
     private String addressLine1;
 
+    @Size(max = 255)
     @Column(name = "address_line2", length = 255)
     private String addressLine2;
 
+    @NotBlank
+    @Size(max = 100)
     @Column(nullable = false, length = 100)
     private String city;
 
+    @Size(max = 100)
     @Column(length = 100)
     private String state;
 
+    @Size(max = 30)
     @Column(name = "postal_code", length = 30)
     private String postalCode;
 
+    @NotBlank
+    @Size(max = 100)
     @Column(nullable = false, length = 100)
     private String country = "India";
 
