@@ -24,6 +24,10 @@ public class TimeLogService {
         return timeLogRepository.findById(id);
     }
 
+    public List<TimeLog> getAllTimeLogs() {
+        return timeLogRepository.findAll();
+    }
+
     public List<TimeLog> getTimeLogsByWorkOrderId(Long workOrderId) {
         return timeLogRepository.findByWorkOrderId(workOrderId);
     }

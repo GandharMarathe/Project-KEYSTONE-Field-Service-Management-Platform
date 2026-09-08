@@ -98,7 +98,9 @@ public class TimeLogController {
             );
         }
 
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.ok(
+                timeLogService.getAllTimeLogs()
+        );
     }
 }
 
