@@ -3,9 +3,9 @@ Spring Boot + PostgreSQL REST API for Meridian Facilities Management's field-ser
 
 Run locally
 
-Ensure PostgreSQL is running and a keystone database exists.
-Optionally set DB_URL, DB_USERNAME, DB_PASSWORD, and JWT_SECRET as environment variables — all fall back to local-dev defaults in application.properties if unset.
-Start the API with .\mvnw.cmd spring-boot:run (Windows) or ./mvnw spring-boot:run (macOS/Linux). Flyway applies schema migrations automatically on startup.
+1. Ensure PostgreSQL is running and a keystone database exists.
+2. Optionally set DB_URL, DB_USERNAME, DB_PASSWORD, and JWT_SECRET as environment variables — all fall back to local-dev defaults in application.properties if unset.
+3. Start the API with .\mvnw.cmd spring-boot:run (Windows) or ./mvnw spring-boot:run (macOS/Linux). Flyway applies schema migrations automatically on startup.
 
 Implementation notes
 
