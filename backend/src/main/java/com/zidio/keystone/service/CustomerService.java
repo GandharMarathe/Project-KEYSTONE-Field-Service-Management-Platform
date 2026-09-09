@@ -41,6 +41,10 @@ public class CustomerService {
         return customerRepository.existsById(id);
     }
 
+    public void deleteCustomer(Long id) {
+        customerRepository.deleteById(id);
+    }
+
     public Customer getCustomerByIdOrThrow(Long id) {
         return customerRepository.findById(id)
                 .orElseThrow(() ->

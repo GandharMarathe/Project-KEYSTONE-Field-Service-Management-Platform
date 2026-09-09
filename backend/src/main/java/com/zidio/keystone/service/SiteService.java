@@ -60,5 +60,14 @@ public class SiteService {
     public boolean existsById(Long id) {
         return siteRepository.existsById(id);
     }
+
+    public boolean existsByCustomerId(Long customerId) {
+
+        return siteRepository.existsByCustomerId(customerId);
+    }
+
+    public void deleteSite(Long id) {
+        siteRepository.deleteById(id);
+    }
 }
 

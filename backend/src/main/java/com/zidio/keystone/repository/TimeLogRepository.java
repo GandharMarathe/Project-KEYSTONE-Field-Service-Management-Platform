@@ -7,6 +7,8 @@ import java.util.List;
 
 public interface TimeLogRepository extends JpaRepository<TimeLog, Long> {
 
+    boolean existsByWorkOrderId(Long workOrderId);
+
     List<TimeLog> findByWorkOrderId(Long workOrderId);
 
     List<TimeLog> findByTechnicianId(Long technicianId);

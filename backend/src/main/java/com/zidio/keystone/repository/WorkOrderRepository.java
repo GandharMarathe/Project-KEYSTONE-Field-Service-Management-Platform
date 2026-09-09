@@ -13,6 +13,10 @@ public interface WorkOrderRepository extends JpaRepository<WorkOrder, Long> {
 
     boolean existsByCode(String code);
 
+    boolean existsByCustomerId(Long customerId);
+
+    boolean existsBySiteId(Long siteId);
+
     List<WorkOrder> findByCustomerId(Long customerId);
 
     List<WorkOrder> findBySiteId(Long siteId);

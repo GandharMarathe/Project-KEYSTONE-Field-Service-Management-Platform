@@ -57,6 +57,10 @@ public class TimeLogService {
     public boolean existsById(Long id) {
         return timeLogRepository.existsById(id);
     }
+
+    public boolean existsByWorkOrderId(Long workOrderId) {
+        return timeLogRepository.existsByWorkOrderId(workOrderId);
+    }
 }
 
 

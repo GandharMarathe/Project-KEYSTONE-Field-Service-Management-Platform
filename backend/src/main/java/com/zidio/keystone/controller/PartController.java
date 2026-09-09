@@ -2,6 +2,7 @@ package com.zidio.keystone.controller;
 
 import com.zidio.keystone.domain.entity.Part;
 import com.zidio.keystone.service.PartService;
+import com.zidio.keystone.service.PartUsageService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,14 @@ import java.util.List;
 public class PartController {
 
     private final PartService partService;
+    private final PartUsageService partUsageService;
 
-    public PartController(PartService partService) {
+    public PartController(
+            PartService partService,
+            PartUsageService partUsageService
+    ) {
         this.partService = partService;
+        this.partUsageService = partUsageService;
     }
 
     @PostMapping
@@ -91,6 +97,20 @@ public class PartController {
         return ResponseEntity.ok(
                 partService.updatePart(existing)
         );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletePart(
+            @PathVariable Long id
+    ) {
+        partService.getPartByIdOrThrow(id);
+
+        if (partUsageService.existsByPartId(id)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        partService.deletePart(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

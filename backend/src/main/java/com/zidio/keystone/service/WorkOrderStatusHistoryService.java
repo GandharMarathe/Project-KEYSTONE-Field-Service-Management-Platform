@@ -39,6 +39,10 @@ public class WorkOrderStatusHistoryService {
     public List<WorkOrderStatusHistory> getAllHistory() {
         return workOrderStatusHistoryRepository.findAll();
     }
+
+    public boolean existsByWorkOrderId(Long workOrderId) {
+        return workOrderStatusHistoryRepository.existsByWorkOrderId(workOrderId);
+    }
 }
 
 

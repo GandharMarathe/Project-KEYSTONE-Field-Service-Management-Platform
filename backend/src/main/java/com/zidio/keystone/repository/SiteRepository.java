@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface SiteRepository extends JpaRepository<Site, Long> {
+    boolean existsByCustomerId(Long customerId);
+
     List<Site> findByCustomer(Customer customer);
 
     List<Site> findByCustomerId(Long customerId);

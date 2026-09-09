@@ -67,6 +67,14 @@ public class PartUsageService {
     public boolean existsById(Long id) {
         return partUsageRepository.existsById(id);
     }
+
+    public boolean existsByPartId(Long partId) {
+        return partUsageRepository.existsByPartId(partId);
+    }
+
+    public boolean existsByWorkOrderId(Long workOrderId) {
+        return partUsageRepository.existsByWorkOrderId(workOrderId);
+    }
 }
 
 

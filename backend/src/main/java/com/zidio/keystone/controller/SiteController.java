@@ -4,6 +4,7 @@ import com.zidio.keystone.domain.entity.Customer;
 import com.zidio.keystone.domain.entity.Site;
 import com.zidio.keystone.service.CustomerService;
 import com.zidio.keystone.service.SiteService;
+import com.zidio.keystone.service.WorkOrderService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +18,16 @@ public class SiteController {
 
     private final SiteService siteService;
     private final CustomerService customerService;
+    private final WorkOrderService workOrderService;
 
     public SiteController(
             SiteService siteService,
-            CustomerService customerService
+            CustomerService customerService,
+            WorkOrderService workOrderService
     ) {
         this.siteService = siteService;
         this.customerService = customerService;
+        this.workOrderService = workOrderService;
     }
 
     @PostMapping
@@ -96,5 +100,19 @@ public class SiteController {
         return ResponseEntity.ok(
                 siteService.updateSite(existing)
         );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteSite(
+            @PathVariable Long id
+    ) {
+        siteService.getSiteByIdOrThrow(id);
+
+        if (workOrderService.existsBySiteId(id)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        siteService.deleteSite(id);
+        return ResponseEntity.noContent().build();
     }
 }

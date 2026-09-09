@@ -6,9 +6,12 @@ import com.zidio.keystone.domain.entity.User;
 import com.zidio.keystone.domain.entity.WorkOrder;
 import com.zidio.keystone.domain.enums.Role;
 import com.zidio.keystone.service.CustomerService;
+import com.zidio.keystone.service.PartUsageService;
 import com.zidio.keystone.service.SiteService;
+import com.zidio.keystone.service.TimeLogService;
 import com.zidio.keystone.service.UserService;
 import com.zidio.keystone.service.WorkOrderService;
+import com.zidio.keystone.service.WorkOrderStatusHistoryService;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.validation.Valid;
@@ -26,17 +29,26 @@ public class WorkOrderController {
     private final CustomerService customerService;
     private final SiteService siteService;
     private final UserService userService;
+    private final WorkOrderStatusHistoryService workOrderStatusHistoryService;
+    private final PartUsageService partUsageService;
+    private final TimeLogService timeLogService;
 
     public WorkOrderController(
             WorkOrderService workOrderService,
             CustomerService customerService,
             SiteService siteService,
-            UserService userService
+            UserService userService,
+            WorkOrderStatusHistoryService workOrderStatusHistoryService,
+            PartUsageService partUsageService,
+            TimeLogService timeLogService
     ) {
         this.workOrderService = workOrderService;
         this.customerService = customerService;
         this.siteService = siteService;
         this.userService = userService;
+        this.workOrderStatusHistoryService = workOrderStatusHistoryService;
+        this.partUsageService = partUsageService;
+        this.timeLogService = timeLogService;
     }
 
     @PostMapping
@@ -153,6 +165,24 @@ public class WorkOrderController {
         return ResponseEntity.ok(
                 workOrderService.updateWorkOrder(existing)
         );
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteWorkOrder(
+            @PathVariable Long id
+    ) {
+        workOrderService.getWorkOrderByIdOrThrow(id);
+
+        boolean hasDependents = workOrderStatusHistoryService.existsByWorkOrderId(id)
+                || partUsageService.existsByWorkOrderId(id)
+                || timeLogService.existsByWorkOrderId(id);
+
+        if (hasDependents) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+        }
+
+        workOrderService.deleteWorkOrder(id);
+        return ResponseEntity.noContent().build();
     }
 }
 

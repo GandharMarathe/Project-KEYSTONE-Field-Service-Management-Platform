@@ -42,16 +42,20 @@ public class SecurityConfig {
                         // Parts catalog/inventory: writes restricted to management/dispatch
                         .requestMatchers(HttpMethod.POST, "/api/parts/**").hasAnyRole("MANAGER", "DISPATCHER")
                         .requestMatchers(HttpMethod.PUT, "/api/parts/**").hasAnyRole("MANAGER", "DISPATCHER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/parts/**").hasAnyRole("MANAGER", "DISPATCHER")
 
                         // Customers & Sites: writes restricted to management/dispatch
                         .requestMatchers(HttpMethod.POST, "/api/customers/**", "/api/sites/**").hasAnyRole("MANAGER", "DISPATCHER")
                         .requestMatchers(HttpMethod.PUT, "/api/customers/**", "/api/sites/**").hasAnyRole("MANAGER", "DISPATCHER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/customers/**", "/api/sites/**").hasAnyRole("MANAGER", "DISPATCHER")
 
                         // Work Orders: creation is management/dispatch only. PUT is also allowed to TECHNICIAN
                         // so they can move status on their own assigned job -- ownership and which fields they
                         // may change is enforced inside WorkOrderController, since that can't be expressed here.
+                        // DELETE is management/dispatch only -- deletion is destructive, unlike a status update.
                         .requestMatchers(HttpMethod.POST, "/api/work-orders/**").hasAnyRole("MANAGER", "DISPATCHER")
                         .requestMatchers(HttpMethod.PUT, "/api/work-orders/**").hasAnyRole("MANAGER", "DISPATCHER", "TECHNICIAN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/work-orders/**").hasAnyRole("MANAGER", "DISPATCHER")
 
                         // Status history, Part Usage, Time Logs: any operational role logs their own work
                         .requestMatchers(HttpMethod.POST, "/api/work-order-status-history/**").hasAnyRole("MANAGER", "DISPATCHER", "TECHNICIAN")

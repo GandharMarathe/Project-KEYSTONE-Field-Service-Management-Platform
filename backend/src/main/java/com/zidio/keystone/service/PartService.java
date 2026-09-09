@@ -65,6 +65,10 @@ public class PartService {
     public boolean existsByPartNumber(String partNumber) {
         return partRepository.existsByPartNumber(partNumber);
     }
+
+    public void deletePart(Long id) {
+        partRepository.deleteById(id);
+    }
 }
 
 

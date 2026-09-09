@@ -63,6 +63,18 @@ public class WorkOrderService {
     public boolean existsById(Long id) {
         return workOrderRepository.existsById(id);
     }
+
+    public boolean existsByCustomerId(Long customerId) {
+        return workOrderRepository.existsByCustomerId(customerId);
+    }
+
+    public boolean existsBySiteId(Long siteId) {
+        return workOrderRepository.existsBySiteId(siteId);
+    }
+
+    public void deleteWorkOrder(Long id) {
+        workOrderRepository.deleteById(id);
+    }
 }
 
 

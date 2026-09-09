@@ -8,6 +8,8 @@ import java.util.List;
 public interface WorkOrderStatusHistoryRepository
         extends JpaRepository<WorkOrderStatusHistory, Long> {
 
+    boolean existsByWorkOrderId(Long workOrderId);
+
     List<WorkOrderStatusHistory> findByWorkOrderIdOrderByChangedAtAsc(
             Long workOrderId
     );

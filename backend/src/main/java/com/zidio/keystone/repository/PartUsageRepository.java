@@ -7,6 +7,10 @@ import java.util.List;
 
 public interface PartUsageRepository extends JpaRepository<PartUsage, Long> {
 
+    boolean existsByWorkOrderId(Long workOrderId);
+
+    boolean existsByPartId(Long partId);
+
     List<PartUsage> findByWorkOrderId(Long workOrderId);
 
     List<PartUsage> findByPartId(Long partId);
