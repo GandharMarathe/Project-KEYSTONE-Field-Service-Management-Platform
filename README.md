@@ -48,4 +48,4 @@ Layered monolithic architecture with thin controllers, service-layer business ru
 `Link`: [System Design Architecture](https://wasp-hall-12061834.figma.site/)
 
 ## Implementation status
-Backend and frontend implementation are in progress. The project documents and approved requirements remain the source of truth for product scope, architecture, and acceptance criteria.
+Backend and frontend implementation are in progress. The project documents and approved requirements in `docs` remain the source of truth for product scope, architecture, and acceptance criteria.
