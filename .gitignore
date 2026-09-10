@@ -1,0 +1,4 @@
+### Ignore case ###
+.agents
+.cursor
+.env
