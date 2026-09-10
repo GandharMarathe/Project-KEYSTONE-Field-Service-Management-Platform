@@ -45,7 +45,7 @@ Append-only work order status history and operational records for traceability.
 Layered monolithic architecture with thin controllers, service-layer business rules, DTO-based API boundaries, repository-based persistence, and centralized security/error handling.
 
 # Reference
-`Link`: Project KEYSTONE Figma Reference
+`Link`: [Project KEYSTONE Figma Reference](https://wasp-hall-12061834.figma.site/)
 
 # Implementation status
 Backend and frontend implementation are in progress. The project documents and approved requirements remain the source of truth for product scope, architecture, and acceptance criteria.
