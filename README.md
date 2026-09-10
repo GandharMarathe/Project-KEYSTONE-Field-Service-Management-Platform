@@ -1,13 +1,13 @@
 # KEYSTONE backend
 Spring Boot + PostgreSQL REST API for Meridian Facilities Management's field-service platform.
 
-# Run locally
+## Run locally
 
 1. Ensure PostgreSQL is running and a keystone database exists.
 2. Optionally set DB_URL, DB_USERNAME, DB_PASSWORD, and JWT_SECRET as environment variables — all fall back to local-dev defaults in application.properties if unset.
 3. Start the API with .\mvnw.cmd spring-boot:run (Windows) or ./mvnw spring-boot:run (macOS/Linux). Flyway applies schema migrations automatically on startup.
 
-# Implementation notes
+## Implementation notes
 
 ● Authentication is custom JWT, not Spring's default UserDetailsService: POST /api/auth/login verifies credentials against the DB with BCrypt and returns a signed token, which subsequent requests supply via Authorization: Bearer <token>.
 
