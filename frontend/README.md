@@ -4,11 +4,14 @@ React + TypeScript + Vite frontend for Meridian Facilities Management's field-se
 
 ## Run locally
 
-1. Copy `.env.example` to `.env` and set `VITE_API_BASE_URL` to the Spring Boot API URL.
+Start the backend first (`cd backend` then `.\mvnw.cmd spring-boot:run`) so http://localhost:8080 is up. Then in this folder:
+
+1. Copy `.env.example` to `.env`. Keep `VITE_API_BASE_URL=http://localhost:8080`.
 2. Install dependencies with `pnpm install` (or `npm install`).
 3. Start the development server with `pnpm dev` (or `npm run dev`).
 
 Frontend: http://localhost:5173
+Login: http://localhost:5173/login
 Backend API: http://localhost:8080
 
 ## Project documents

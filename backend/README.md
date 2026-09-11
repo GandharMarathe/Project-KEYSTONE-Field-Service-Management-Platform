@@ -11,12 +11,14 @@ cd Project-KEYSTONE-Field-Service-Management-Platform\backend
 
 ## Run locally
 
+Start PostgreSQL and this API first. Leave this terminal running, then start the frontend in a second terminal.
+
 - Ensure PostgreSQL is running on `127.0.0.1:5432` with a `keystone` database.
 - Copy `.env.example` to `.env` for the local variable names. Spring Boot does not load `.env` automatically; export `SERVER_PORT`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, and `JWT_SECRET`, or rely on the local-dev defaults in `src/main/resources/application.properties`.
 - Start the API with `.\mvnw.cmd spring-boot:run` (Windows) or `./mvnw spring-boot:run` (macOS/Linux). Flyway applies schema migrations automatically on startup.
 - Backend: http://localhost:8080
 - API login: `POST` http://localhost:8080/api/auth/login
-- Frontend (separate folder): http://localhost:5173
+- Frontend (second terminal, `frontend` folder): `pnpm dev` → http://localhost:5173
 
 ## Project documents
 

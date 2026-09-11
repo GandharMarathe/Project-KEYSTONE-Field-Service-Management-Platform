@@ -21,10 +21,59 @@
 ### Repository
 
 * **Repository:** `Project-KEYSTONE-Field-Service-Management-Platform`
-* **Backend Path:** `C:\Users\gamer\Desktop\Zidio_Development\Project-KEYSTONE-Field-Service-Management-Platform\backend`
-* **Backend Branch:** `backend`
+* **Workspace Path:** `C:\Users\gamer\Desktop\ZidioDevelopment_Workspace\Project-KEYSTONE-Field-Service-Management-Platform`
+* **Backend Path:** `...\backend`
+* **Frontend Path:** `...\frontend`
+* **Backend Branch:** `backend` (full project lives here; **not merged to `main` yet**)
 * **Git Remote:** `https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform`
 * **Developer Git Identity:** `s0a1m0x01`
+
+### How to turn on and run
+
+Clone the `backend` branch, not `main`:
+
+```powershell
+git clone -b backend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git
+cd Project-KEYSTONE-Field-Service-Management-Platform
+```
+
+1. Start PostgreSQL with database `keystone` on `127.0.0.1:5432`.
+2. **Backend (terminal 1):**
+
+```powershell
+cd backend
+copy .env.example .env
+.\mvnw.cmd spring-boot:run
+```
+
+3. **Frontend (terminal 2), after the API is up:**
+
+```powershell
+cd frontend
+copy .env.example .env
+pnpm install
+pnpm dev
+```
+
+| Service | Port | Local URL |
+| --- | --- | --- |
+| Backend API | `8080` | http://localhost:8080 |
+| API login | `8080` | `POST` http://localhost:8080/api/auth/login |
+| Frontend | `5173` | http://localhost:5173 |
+| Frontend login | `5173` | http://localhost:5173/login |
+| PostgreSQL | `5432` | `127.0.0.1:5432` / database `keystone` |
+
+`.\mvnw.cmd` must be run from `backend`, not the repo root.
+
+### Project documents
+
+Keep specifications in `docs` only.
+
+* Project brief: `docs/Zidio_Development_Project_Keystone.pdf`
+* Backend specification: `docs/Backend Specialization.md`
+* Frontend specification: `docs/Frontend Specialization.md`
+* System design: `docs/KEYSTONE_System_Design.pdf`
+* Development log: `docs/myLogs.md`
 
 ---
 
