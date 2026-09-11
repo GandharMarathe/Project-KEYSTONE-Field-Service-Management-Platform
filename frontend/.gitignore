@@ -1,0 +1,5 @@
+node_modules
+dist
+.pnpm-store
+.env
+KEYSTONE_Frontend_Development_Specification.md

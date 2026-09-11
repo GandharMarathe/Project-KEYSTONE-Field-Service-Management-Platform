@@ -1,5 +1,13 @@
 # KEYSTONE backend
+
 Spring Boot + PostgreSQL REST API for Meridian Facilities Management's field-service platform.
+
+## Git clone
+
+```powershell
+git clone -b backend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git
+cd Project-KEYSTONE-Field-Service-Management-Platform\backend
+```
 
 ## Run locally
 

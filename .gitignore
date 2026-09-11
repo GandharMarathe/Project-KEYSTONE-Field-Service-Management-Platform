@@ -1,4 +1,9 @@
 ### Ignore case ###
 .agents
 .cursor
+.idea
 .env
+frontend/node_modules
+frontend/dist
+frontend/.pnpm-store
+backend/target
