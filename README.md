@@ -27,7 +27,28 @@ Start PostgreSQL first, then this backend.
 
 ### 1. PostgreSQL
 
-Make sure PostgreSQL is running and a `keystone` database exists on `127.0.0.1:5432`.
+`psql` is the SQL client. Start the **Windows service** first. On this machine it is PostgreSQL 18:
+
+```powershell
+Get-Service *postgres*
+Start-Service postgresql-x64-18
+```
+
+The service is Automatic, so it is often already `Running`. You need database `keystone` on `127.0.0.1:5432`.
+
+Optional client (you will be prompted for the local password; do not paste it into git):
+
+```powershell
+psql -h 127.0.0.1 -U postgres -d keystone
+```
+
+If `keystone` does not exist yet:
+
+```powershell
+psql -h 127.0.0.1 -U postgres -d postgres -c "CREATE DATABASE keystone;"
+```
+
+Local DB username/password live only in `backend/.env` (copy from `backend/.env.example`). Never commit `.env`.
 
 ### 2. Backend
 

@@ -21,8 +21,9 @@ git clone -b frontend https://github.com/GandharMarathe/Project-KEYSTONE-Field-S
 
 Start PostgreSQL, then this API.
 
-- Ensure PostgreSQL is running on `127.0.0.1:5432` with a `keystone` database.
-- Copy `.env.example` to `.env` for the local variable names. Spring Boot does not load `.env` automatically; export `SERVER_PORT`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, and `JWT_SECRET`, or rely on the local-dev defaults in `src/main/resources/application.properties`.
+- `psql` is the SQL client. Start the Windows service first: `Get-Service *postgres*` then `Start-Service postgresql-x64-18` (PostgreSQL 18 on this machine; often already `Running`).
+- Need database `keystone` on `127.0.0.1:5432`. Optional: `psql -h 127.0.0.1 -U postgres -d keystone`. Create it with `CREATE DATABASE keystone;` if missing. Do not put the password in git; use the local `.env` copy.
+- Copy `.env.example` to `.env` for the local variable names. Never commit `.env`. Spring Boot does not load `.env` automatically; export `SERVER_PORT`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, and `JWT_SECRET`, or rely on the local-dev defaults in `src/main/resources/application.properties`.
 - Start the API with `.\mvnw.cmd spring-boot:run` (Windows) or `./mvnw spring-boot:run` (macOS/Linux). Flyway applies schema migrations automatically on startup.
 - Backend: http://localhost:8080
 - API login: `POST` http://localhost:8080/api/auth/login

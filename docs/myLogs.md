@@ -43,7 +43,29 @@ git clone -b backend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Se
 cd Project-KEYSTONE-Field-Service-Management-Platform
 ```
 
-1. Start PostgreSQL with database `keystone` on `127.0.0.1:5432`.
+1. Start PostgreSQL. `psql` is the SQL client; the server is the Windows service.
+
+```powershell
+Get-Service *postgres*
+Start-Service postgresql-x64-18
+```
+
+This machine uses PostgreSQL 18 (`postgresql-x64-18`). The service is Automatic, so it is often already `Running`. Need database `keystone` on `127.0.0.1:5432`.
+
+Optional client (password prompt; do not commit the password):
+
+```powershell
+psql -h 127.0.0.1 -U postgres -d keystone
+```
+
+If `keystone` is missing:
+
+```powershell
+psql -h 127.0.0.1 -U postgres -d postgres -c "CREATE DATABASE keystone;"
+```
+
+Local credentials: `backend/.env` copied from `backend/.env.example`. Never commit `.env`.
+
 2. Start the API:
 
 ```powershell

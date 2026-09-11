@@ -3,6 +3,7 @@
 .cursor
 .idea
 .env
+backend/.env
 backend/target
 # UI lives on the `frontend` branch. Do not commit a frontend/ folder here.
 /frontend/
