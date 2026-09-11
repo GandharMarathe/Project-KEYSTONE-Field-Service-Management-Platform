@@ -18,6 +18,14 @@ cd Project-KEYSTONE-Field-Service-Management-Platform\backend
 - API login: `POST` http://localhost:8080/api/auth/login
 - Frontend (separate folder): http://localhost:5173
 
+## Project documents
+
+Specifications live in `docs`, not in this folder.
+
+- Project brief: `../docs/Zidio_Development_Project_Keystone.pdf`
+- Backend specification: `../docs/Backend Specialization.md`
+- Development log: `../docs/myLogs.md`
+
 ## Implementation notes
 
 - Authentication is custom JWT, not Spring's default `UserDetailsService: POST /api/auth/login` verifies credentials against the DB with BCrypt and returns a signed token, which subsequent requests supply via `Authorization: Bearer <token>`.

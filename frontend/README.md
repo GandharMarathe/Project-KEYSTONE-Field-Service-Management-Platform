@@ -8,6 +8,18 @@ React + TypeScript + Vite frontend for Meridian Facilities Management's field-se
 2. Install dependencies with `pnpm install` (or `npm install`).
 3. Start the development server with `pnpm dev` (or `npm run dev`).
 
+Frontend: http://localhost:5173
+Backend API: http://localhost:8080
+
+## Project documents
+
+Specifications live in `docs`, not in this folder.
+
+- Project brief: `../docs/Zidio_Development_Project_Keystone.pdf`
+- Frontend specification: `../docs/Frontend Specialization.md`
+- Backend specification: `../docs/Backend Specialization.md`
+- Development log: `../docs/myLogs.md`
+
 ## Implementation notes
 
 - Authentication uses `POST /api/auth/login`; the token is supplied in the API authorization header after login.

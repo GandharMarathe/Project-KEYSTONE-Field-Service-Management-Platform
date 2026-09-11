@@ -45,6 +45,16 @@ Environment templates:
 
 Common mistake: `.\mvnw.cmd` at the repo root fails because the Maven wrapper is inside `backend`.
 
+### Project documents
+
+Keep specifications and the project brief in `docs` only. Do not keep copies inside `backend`.
+
+* Project brief: `docs/Zidio_Development_Project_Keystone.pdf`
+* Backend specification: `docs/Backend Specialization.md`
+* Frontend specification: `docs/Frontend Specialization.md`
+* System design: `docs/KEYSTONE_System_Design.pdf`
+* Development log: `docs/myLogs.md`
+
 ---
 
 # System Architecture

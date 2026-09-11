@@ -34,6 +34,10 @@ UI: `http://localhost:5173`
 ## Notes
 
 - Development log, including local ports: `docs/myLogs.md`
+- Project brief: `docs/Zidio_Development_Project_Keystone.pdf`
+- Backend specification: `docs/Backend Specialization.md`
+- Frontend specification: `docs/Frontend Specialization.md`
+- System design: `docs/KEYSTONE_System_Design.pdf`
 - Backend env template: `backend/.env.example`
 - Frontend env template: `frontend/.env.example`
 - Backend API test payloads: `backend/*-payload.json`
