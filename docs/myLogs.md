@@ -21,39 +21,10 @@
 ### Repository
 
 * **Repository:** `Project-KEYSTONE-Field-Service-Management-Platform`
-* **Backend Path:** `C:\Users\gamer\Desktop\ZidioDevelopment_Workspace\Project-KEYSTONE-Field-Service-Management-Platform\backend`
+* **Backend Path:** `C:\Users\gamer\Desktop\Zidio_Development\Project-KEYSTONE-Field-Service-Management-Platform\backend`
 * **Backend Branch:** `backend`
 * **Git Remote:** `https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform`
 * **Developer Git Identity:** `s0a1m0x01`
-
-### Local URLs and ports
-
-Use these after a clone of the `backend` branch. Run commands from the matching folder, not the repo root.
-
-| Service | Port | Local URL | Start from |
-| --- | --- | --- | --- |
-| Backend API (Spring Boot) | `8080` | http://localhost:8080 | `backend` → `.\mvnw.cmd spring-boot:run` |
-| API login | `8080` | `POST` http://localhost:8080/api/auth/login | backend must already be running |
-| Frontend (Vite) | `5173` | http://localhost:5173 | `frontend` → `pnpm dev` |
-| Frontend login | `5173` | http://localhost:5173/login | frontend must already be running |
-| PostgreSQL | `5432` | `127.0.0.1:5432` database `keystone` | local Postgres service |
-
-Environment templates:
-
-* Backend: copy `backend/.env.example` to `backend/.env` (gitignored). Spring Boot reads `SERVER_PORT`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, and `JWT_SECRET` as OS environment variables, with the same local-dev defaults in `backend/src/main/resources/application.properties`.
-* Frontend: copy `frontend/.env.example` to `frontend/.env`. `VITE_API_BASE_URL` must stay `http://localhost:8080` so the UI can reach the API.
-
-Common mistake: `.\mvnw.cmd` at the repo root fails because the Maven wrapper is inside `backend`.
-
-### Project documents
-
-Keep specifications and the project brief in `docs` only. Do not keep copies inside `backend`.
-
-* Project brief: `docs/Zidio_Development_Project_Keystone.pdf`
-* Backend specification: `docs/Backend Specialization.md`
-* Frontend specification: `docs/Frontend Specialization.md`
-* System design: `docs/KEYSTONE_System_Design.pdf`
-* Development log: `docs/myLogs.md`
 
 ---
 
