@@ -3,7 +3,6 @@
 .cursor
 .idea
 .env
-frontend/node_modules
-frontend/dist
-frontend/.pnpm-store
 backend/target
+# UI lives on the `frontend` branch. Do not commit a frontend/ folder here.
+/frontend/

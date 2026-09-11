@@ -8,9 +8,9 @@
 
 ### System Design Reference: https://wasp-hall-12061834.figma.site/
 
-### Status: Backend Core + API Implementation & Integration Testing — Near Completion
+### Status: Backend core complete. UI lives on the `frontend` branch, not this one.
 
-### Next Major Phase: Frontend Integration & Full-Stack Testing
+### Next: Frontend teammate tweaks on `frontend`. Do not put a `frontend/` folder on `backend`.
 
 ---
 
@@ -23,14 +23,20 @@
 * **Repository:** `Project-KEYSTONE-Field-Service-Management-Platform`
 * **Workspace Path:** `C:\Users\gamer\Desktop\ZidioDevelopment_Workspace\Project-KEYSTONE-Field-Service-Management-Platform`
 * **Backend Path:** `...\backend`
-* **Frontend Path:** `...\frontend`
-* **Backend Branch:** `backend` (full project lives here; **not merged to `main` yet**)
 * **Git Remote:** `https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform`
 * **Developer Git Identity:** `s0a1m0x01`
 
-### How to turn on and run
+Same GitHub repo, three different branches:
 
-Clone the `backend` branch, not `main`:
+| Branch | Clone | Contents |
+| --- | --- | --- |
+| `main` | `git clone` (default) | Docs only. **Not** the app. |
+| `backend` | `git clone -b backend ...` | Spring Boot API + `docs`. **This log / this branch.** No `frontend/` folder. |
+| `frontend` | `git clone -b frontend ...` | React / Vite UI at that branch’s **repo root** (frontend teammate). |
+
+`backend` is not merged into `main` yet.
+
+### How to turn on and run (this branch)
 
 ```powershell
 git clone -b backend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git
@@ -38,7 +44,7 @@ cd Project-KEYSTONE-Field-Service-Management-Platform
 ```
 
 1. Start PostgreSQL with database `keystone` on `127.0.0.1:5432`.
-2. **Backend (terminal 1):**
+2. Start the API:
 
 ```powershell
 cd backend
@@ -46,24 +52,15 @@ copy .env.example .env
 .\mvnw.cmd spring-boot:run
 ```
 
-3. **Frontend (terminal 2), after the API is up:**
-
-```powershell
-cd frontend
-copy .env.example .env
-pnpm install
-pnpm dev
-```
-
 | Service | Port | Local URL |
 | --- | --- | --- |
 | Backend API | `8080` | http://localhost:8080 |
 | API login | `8080` | `POST` http://localhost:8080/api/auth/login |
-| Frontend | `5173` | http://localhost:5173 |
-| Frontend login | `5173` | http://localhost:5173/login |
 | PostgreSQL | `5432` | `127.0.0.1:5432` / database `keystone` |
 
 `.\mvnw.cmd` must be run from `backend`, not the repo root.
+
+The UI is **not** in this checkout. Clone `-b frontend` separately. That app should use `VITE_API_BASE_URL=http://localhost:8080`. Remaining UI tweaks belong on `frontend`.
 
 ### Project documents
 
@@ -840,6 +837,8 @@ Before frontend integration:
 
 # Backend → Frontend Integration Transition
 
+The React UI is maintained on the `frontend` branch. Do not add it back under `frontend/` on `backend`.
+
 Once the final backend smoke test is clean:
 
 ### Backend Handoff
@@ -959,17 +958,28 @@ KEYSTONE
 
 ## Overall Status
 
-**Backend:** 🟢 Core implementation complete / final verification remaining
+**Backend:** 🟢 Core implementation complete
 **Database:** 🟢 Operational
 **Authentication:** 🟢 Operational
 **JWT:** 🟢 Operational
 **Security:** 🟢 Major discovered issues fixed
 **Core APIs:** 🟢 Implemented and actively tested
-**Git:** 🟢 Synchronized during completed phases
-**Frontend:** ⏳ Next major development phase
-**Full-Stack Integration:** ⏳ After backend freeze
-**Final E2E Debugging:** ⏳ After frontend + backend are running together
+**Git:** 🟢 `backend` branch is API + docs only (no `frontend/` folder)
+**Frontend:** lives on the `frontend` branch; remaining UI tweaks are the frontend teammate’s work
+**Local full-stack test:** done against a temporary copy of the UI, then that copy was removed from `backend`
+**`main`:** still docs-only; not merged yet
 
+---
 
+# 11/09/2026 — Frontend folder removed from `backend`
 
-### Full Stack Integration End Date: 
+A copy of the UI was added under `frontend/` on this branch so the API could be tested with the real screens. That belonged on the `frontend` branch, not here.
+
+* [x] Confirmed the app runs locally (API on `8080`; UI on the frontend teammate’s branch / local copy)
+* [x] Remaining issues are frontend tweaks, not backend rebuild
+* [x] Removed `frontend/` from the `backend` branch (local + GitHub)
+* [x] Root README, backend README, and this log now describe the three-branch layout
+* [x] Do not clone `main` expecting the app
+* [x] Do not clone `backend` expecting a `frontend/` folder
+
+### Full Stack Integration End Date: 11/09/2026 (local test). UI follow-up stays on `frontend`. 
