@@ -18,7 +18,7 @@ cd backend
 
 API: `http://localhost:8080`
 
-PostgreSQL must be running with a `keystone` database. `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, and `JWT_SECRET` are optional; local-dev defaults are in `backend/src/main/resources/application.properties`.
+PostgreSQL must be running on `127.0.0.1:5432` with a `keystone` database. Copy `backend/.env.example` to `backend/.env` for the local variable names. `SERVER_PORT`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, and `JWT_SECRET` are optional OS environment variables; local-dev defaults are in `backend/src/main/resources/application.properties`.
 
 ## Frontend
 
@@ -33,5 +33,7 @@ UI: `http://localhost:5173`
 
 ## Notes
 
-- Development log: `docs/myLogs.md`
+- Development log, including local ports: `docs/myLogs.md`
+- Backend env template: `backend/.env.example`
+- Frontend env template: `frontend/.env.example`
 - Backend API test payloads: `backend/*-payload.json`
