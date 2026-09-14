@@ -7,17 +7,32 @@ export type WorkOrderStatus =
   | "CLOSED"
   | "CANCELLED";
 
+export interface BackendCustomer { id: number; name: string; email?: string; phone?: string }
+export interface BackendSite { id: number; name: string; addressLine1?: string; city?: string; customer?: BackendCustomer }
+export interface BackendUser { id: number; email: string; firstName?: string; lastName?: string }
+
 export interface WorkOrder {
-  id: string;
+  id: number;
   code: string;
   title: string;
-  description: string;
+  description?: string;
   priority: string;
   status: WorkOrderStatus;
-  customerId: string;
-  siteId: string;
-  assigneeId?: string;
-  slaDueDate?: string;
+  customer: BackendCustomer;
+  site: BackendSite;
+  assignedTo?: BackendUser;
+  slaDueAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface StatusHistoryItem {
+  id: number;
+  fromStatus?: WorkOrderStatus;
+  toStatus: WorkOrderStatus;
+  changedBy?: BackendUser;
+  changedAt: string;
+  note?: string;
 }
 
 export interface PageResponse<T> {
@@ -26,13 +41,4 @@ export interface PageResponse<T> {
   size: number;
   totalElements: number;
   totalPages: number;
-}
-
-export interface StatusHistoryItem {
-  id: string;
-  fromStatus?: WorkOrderStatus;
-  toStatus: WorkOrderStatus;
-  changedBy?: string;
-  changedAt: string;
-  note?: string;
 }
