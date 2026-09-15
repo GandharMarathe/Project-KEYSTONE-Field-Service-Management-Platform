@@ -1073,3 +1073,82 @@ No Dockerfile/CI yet. Production needs: managed Postgres + Spring Boot JAR + sta
 * [x] `main` carries docs + clean README; **do not merge** `backend`/`frontend` into `main`
 * [x] README conflict between marketing `main` and operational `backend` resolved by separate READMEs per branch
 * [ ] Push still requires GitHub credentials on the machine that has them
+
+---
+
+# 16/09/2026 — Can someone `git clone` and get the whole app?
+
+## Short answer
+
+**No.** With the current three-branch layout, one `git clone` does **not** give a complete runnable app (UI + API + docs together).
+
+| If they clone… | What they get |
+| --- | --- |
+| `main` (default) | Docs / README only — **no** Spring Boot, **no** React app |
+| `-b backend` | API under `backend/` + docs — **no** UI |
+| `-b frontend` | React/Vite UI at branch root — **no** API |
+
+So a new teammate must clone **two** app branches (or use git worktrees) and run Postgres + API + Vite separately.
+
+## What is “correct / standard”?
+
+Common industry patterns:
+
+### 1. Monorepo on one long-lived branch (most common for a single product)
+
+One default branch (often `main`) contains both apps in folders, e.g.:
+
+```text
+/
+  backend/     Spring Boot
+  frontend/    React + Vite
+  docs/
+```
+
+- One `git clone` → full codebase
+- Feature branches / PRs for changes
+- Still run API and UI as two processes locally (or Docker Compose)
+
+**This is usually what people mean by “clone the whole app.”**
+
+### 2. Two (or three) repositories
+
+- `keystone-backend`, `keystone-frontend`, maybe `keystone-docs`
+- Each clone is one piece; README links the others
+- Standard for larger orgs / separate release cadences
+
+### 3. What KEYSTONE does today (three branches in one GitHub repo)
+
+- Same remote, **different branch trees** (not a shared monorepo folder layout on `main`)
+- Chosen so docs (`main`), API (`backend`), and UI (`frontend`) stay isolated
+- **Trade-off:** you cannot get the full stack from a single default clone
+
+## Correct way to get the full stack *today*
+
+```powershell
+# API + docs
+git clone -b backend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git keystone-backend
+
+# UI (separate folder)
+git clone -b frontend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git keystone-frontend
+```
+
+Or one clone + worktrees:
+
+```powershell
+git clone -b backend … keystone
+cd keystone
+git worktree add ../keystone-frontend frontend
+```
+
+Then: start PostgreSQL → run API from `keystone-backend/backend` → run UI from `keystone-frontend` with `VITE_API_BASE_URL=http://localhost:8080`.
+
+## If we want “one clone = whole app” later
+
+Recommended migration (not done yet):
+
+1. Put `backend/` + `frontend/` + `docs/` together on **`main`** (true monorepo), **or**
+2. Keep separate repos and document both clone URLs, **or**
+3. Add Docker Compose that builds/runs both from a monorepo layout
+
+Until then: treat **two clones (or worktrees)** as the supported full-stack setup. Do not expect `git clone` of `main` alone to run MFM.

@@ -74,6 +74,9 @@ The frontend teammate’s app expects `VITE_API_BASE_URL=http://localhost:8080`.
 
 **Do not merge this branch into `main`.** `main` is docs-only; merging would dump the API onto the docs branch and create large README conflicts.
 
+
+**Note:** A single `git clone` does **not** give UI + API together. Clone `-b backend` and `-b frontend` (or use worktrees). See `docs/myLogs.md` → *Can someone git clone and get the whole app?* A monorepo on one branch is the usual “clone once” standard; this repo uses three branches by design.
+
 ## Notes
 
 - Development log: `docs/myLogs.md`
