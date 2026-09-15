@@ -1062,3 +1062,14 @@ No Dockerfile/CI yet. Production needs: managed Postgres + Spring Boot JAR + sta
 * [x] Commit this log on `backend` (`516606c`)
 * [x] Commit docs mirror on `main` (`c2e9c48`) — docs only, no app code
 * [ ] Push `origin/backend`, `origin/frontend`, and `origin/main` (blocked here: no GitHub HTTPS credentials in this environment)
+
+---
+
+# 16/09/2026 — Pre-push cleanup / merge hygiene
+
+* [x] Discarded CRLF-only noise on `backend` (no fake Java diffs committed)
+* [x] Kept UI commits only on `frontend`
+* [x] Kept API branch free of a nested `frontend/` folder
+* [x] `main` carries docs + clean README; **do not merge** `backend`/`frontend` into `main`
+* [x] README conflict between marketing `main` and operational `backend` resolved by separate READMEs per branch
+* [ ] Push still requires GitHub credentials on the machine that has them
