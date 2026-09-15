@@ -8,6 +8,10 @@ The product UI brand is **MFM**. **KEYSTONE** remains the project / repository c
 
 These branches are **not** the same checkout. Do not merge app code into `main`.
 
+**One `git clone` of this repo is not a complete runnable app.** Default `main` is docs only. To run MFM locally you need the `backend` clone **and** the `frontend` clone (or git worktrees). Details: `docs/myLogs.md` → section *Can someone git clone and get the whole app?*
+
+The usual industry default for “clone once, get everything” is a **monorepo on one branch** (`backend/` + `frontend/` folders on `main`). This project intentionally uses three branches instead; a monorepo migration is optional later.
+
 | Branch | What it contains | Clone |
 | --- | --- | --- |
 | `main` | **Docs only** (this branch). A plain `git clone` does **not** include the app. | default |
