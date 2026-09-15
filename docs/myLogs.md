@@ -1157,3 +1157,18 @@ git clone -b frontend … keystone-frontend
 * [x] Updated Overall Status: clone-once is supported via `main`
 * [ ] Push `origin/main` with the monorepo commit
 * [ ] Optional later: Docker Compose; retire or archive legacy `backend` / `frontend` branches after teammates switch
+
+---
+
+# 16/09/2026 — How to start and run the app (simple)
+
+Same guide as root `README.md`. Plain order of operations:
+
+1. **Clone `main`** (monorepo with `backend/` + `frontend/` + `docs/`).
+2. **Start PostgreSQL** and ensure database **`keystone`** exists on `127.0.0.1:5432`.
+3. **Terminal 1 — backend:** `cd backend` → copy `.env.example` to `.env` → `./mvnw spring-boot:run` (Windows: `.\mvnw.cmd spring-boot:run`). Wait until it is up on **http://localhost:8080**.
+4. **Terminal 2 — frontend:** `cd frontend` → copy `.env.example` to `.env` → `npm install` → `npm run dev`. Open **http://localhost:5173** (must be `localhost`, not `127.0.0.1`).
+5. **Sign in** with local seed manager `admin@keystone.dev` / `Keystone@2026Admin!` (local Flyway seed only).
+6. **Stop:** `Ctrl+C` in each terminal when done.
+
+You always need DB + API + UI. The website talks to the API; the API talks to PostgreSQL.

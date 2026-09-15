@@ -22,37 +22,104 @@ cd Project-KEYSTONE-Field-Service-Management-Platform
 
 The historical `backend` and `frontend` **branches** may still exist for older clones; **`main` is now the supported full-stack tree.**
 
-## Run locally
+## How to start and run the app (start → finish)
 
-### 1. PostgreSQL
+You need **three things running**: PostgreSQL (database), the backend API, and the frontend website. Use **two terminal windows** after the database is up.
 
-Create database `keystone` on `127.0.0.1:5432`. Credentials: copy `backend/.env.example` → `backend/.env` (never commit `.env`).
+### Step 0 — Get the code
 
-### 2. API
+```powershell
+git clone https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git
+cd Project-KEYSTONE-Field-Service-Management-Platform
+```
+
+(Use branch `main`. That folder already has `backend/`, `frontend/`, and `docs/`.)
+
+### Step 1 — Start PostgreSQL and create the database
+
+1. Start the PostgreSQL service on your machine.
+2. Make sure a database named **`keystone`** exists on `127.0.0.1:5432`.
+
+If it does not exist yet:
+
+```powershell
+psql -h 127.0.0.1 -U postgres -d postgres -c "CREATE DATABASE keystone;"
+```
+
+### Step 2 — Start the backend (API)
+
+Open a terminal in the project root:
 
 ```powershell
 cd backend
+copy .env.example .env
 .\mvnw.cmd spring-boot:run
 ```
 
-Linux/macOS: `./mvnw spring-boot:run`  
-API: http://localhost:8080
+On Linux/macOS:
 
-### 3. UI
+```bash
+cd backend
+cp .env.example .env
+./mvnw spring-boot:run
+```
+
+Wait until it finishes starting. Leave this terminal open.
+
+- API is at: http://localhost:8080  
+- Tables are created automatically by Flyway on first start.
+
+**Seed manager login (local only):**  
+email `admin@keystone.dev` — password from the Flyway seed / team notes (`Keystone@2026Admin!` in local seed).
+
+### Step 3 — Start the frontend (website)
+
+Open a **second** terminal in the project root:
 
 ```powershell
 cd frontend
 copy .env.example .env
-# VITE_API_BASE_URL=http://localhost:8080
 npm install
 npm run dev
 ```
 
-UI: http://localhost:5173 (CORS allowlist is localhost:5173)
+On Linux/macOS use `cp .env.example .env` instead of `copy`.
 
-### E2E
+Leave this terminal open.
 
-With API already on `:8080`:
+- Website is at: **http://localhost:5173**  
+- Open that URL in the browser (use `localhost`, not `127.0.0.1`, so CORS works).
+
+### Step 4 — Use the app
+
+1. Go to http://localhost:5173  
+2. Sign in with the manager account above (or another user you create in the UI).  
+3. You should land on the dashboard and can create customers, sites, work orders, etc.
+
+| Role | Where you land |
+| --- | --- |
+| Manager / Dispatcher | Dashboard / work orders |
+| Technician | My Jobs |
+| Customer | Customer portal |
+
+### Step 5 — Stop everything
+
+- Frontend: `Ctrl+C` in the frontend terminal  
+- Backend: `Ctrl+C` in the backend terminal  
+- PostgreSQL: leave running, or stop the Windows/Linux service if you want
+
+### If something fails
+
+| Problem | Check |
+| --- | --- |
+| Backend will not start | Is PostgreSQL running? Does DB `keystone` exist? |
+| Login / API errors in the browser | Is backend still on :8080? Is `frontend/.env` using `VITE_API_BASE_URL=http://localhost:8080`? |
+| Blank CORS / blocked requests | Use **http://localhost:5173**, not http://127.0.0.1:5173 |
+| `npm` errors | Run `npm install` again inside `frontend/` |
+
+### Optional — Playwright e2e test
+
+With PostgreSQL + backend already running:
 
 ```powershell
 cd frontend
