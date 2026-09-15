@@ -902,21 +902,21 @@ React + TypeScript + Vite
 
 ### Frontend Integration Objectives
 
-* [ ] Connect frontend authentication to `/api/auth/login`
-* [ ] Store/use JWT appropriately
-* [ ] Add authenticated API requests
-* [ ] Connect Customer screens
-* [ ] Connect Site screens
-* [ ] Connect User/role functionality
-* [ ] Connect Work Order screens
-* [ ] Connect assignment/status workflow
-* [ ] Connect Work Order history
-* [ ] Connect Parts
-* [ ] Connect Part Usage
-* [ ] Connect Time Logs
-* [ ] Connect Reports
-* [ ] Implement role-specific UI behavior
-* [ ] Verify backend/frontend payload compatibility
+* [x] Connect frontend authentication to `/api/auth/login`
+* [x] Store/use JWT appropriately
+* [x] Add authenticated API requests
+* [x] Connect Customer screens
+* [x] Connect Site screens
+* [x] Connect User/role functionality
+* [x] Connect Work Order screens
+* [x] Connect assignment/status workflow
+* [x] Connect Work Order history
+* [x] Connect Parts
+* [x] Connect Part Usage
+* [x] Connect Time Logs
+* [x] Connect Reports
+* [x] Implement role-specific UI behavior
+* [x] Verify backend/frontend payload compatibility
 
 ---
 
@@ -924,23 +924,23 @@ React + TypeScript + Vite
 
 After frontend integration:
 
-* [ ] Start PostgreSQL
-* [ ] Start Spring Boot backend
-* [ ] Start React/Vite frontend
-* [ ] Verify frontend → backend connectivity
-* [ ] Verify CORS/configuration if required
-* [ ] Verify login from UI
-* [ ] Verify JWT-authenticated API calls
-* [ ] Verify CRUD from UI
-* [ ] Verify role-based behavior
-* [ ] Verify Work Order lifecycle
-* [ ] Verify Parts/Usage
-* [ ] Verify Time Logs
-* [ ] Verify Reports
-* [ ] Verify error handling
-* [ ] Debug integration-specific issues
-* [ ] Perform final end-to-end smoke test
-* [ ] Document final system state
+* [x] Start PostgreSQL
+* [x] Start Spring Boot backend
+* [x] Start React/Vite frontend
+* [x] Verify frontend → backend connectivity
+* [x] Verify CORS/configuration if required
+* [x] Verify login from UI
+* [x] Verify JWT-authenticated API calls
+* [x] Verify CRUD from UI
+* [x] Verify role-based behavior
+* [x] Verify Work Order lifecycle
+* [x] Verify Parts/Usage
+* [x] Verify Time Logs
+* [x] Verify Reports
+* [x] Verify error handling
+* [x] Debug integration-specific issues
+* [x] Perform final end-to-end smoke test
+* [x] Document final system state
 
 ---
 
@@ -986,10 +986,12 @@ KEYSTONE
 **JWT:** 🟢 Operational
 **Security:** 🟢 Major discovered issues fixed
 **Core APIs:** 🟢 Implemented and actively tested
-**Git:** 🟢 `backend` branch is API + docs only (no `frontend/` folder)
-**Frontend:** lives on the `frontend` branch; remaining UI tweaks are the frontend teammate’s work
-**Local full-stack test:** done against a temporary copy of the UI, then that copy was removed from `backend`
-**`main`:** still docs-only; not merged yet
+**Git:** 🟢 three-branch layout (`main` docs, `backend` API+docs, `frontend` UI)
+**Frontend:** 🟢 Units 0–11 done on `frontend` (live API + Playwright lifecycle)
+**UI brand:** 🟢 MFM / Meridian Facilities Management (KEYSTONE remains project codename)
+**Local full-stack test:** 🟢 manual + Playwright against `localhost:5173` ↔ `localhost:8080`
+**Deploy:** ⚪ not configured yet (no Docker/CI; CORS still localhost-only)
+**`main`:** docs-only; keep API off this branch
 
 ---
 
@@ -1004,4 +1006,58 @@ A copy of the UI was added under `frontend/` on this branch so the API could be 
 * [x] Do not clone `main` expecting the app
 * [x] Do not clone `backend` expecting a `frontend/` folder
 
-### Full Stack Integration End Date: 11/09/2026 (local test). UI follow-up stays on `frontend`. 
+### Full Stack Integration End Date: 11/09/2026 (local test). UI follow-up stays on `frontend`.
+
+---
+
+# 16/09/2026 — Frontend Units 0–11 + MFM branding (on `frontend` branch)
+
+Work was done in the `frontend/` git worktree (`frontend` branch only). Backend Java was not changed for these units. Product UI brand is now **MFM** (Meridian Facilities Management); **KEYSTONE** stays the repo/project codename.
+
+## Portals (not admin-only)
+
+1. **Manager / Dispatcher** — `DashboardLayout` (`/dashboard`, work orders, customers, sites, parts, users, reports, SLA)
+2. **Technician** — `FieldLayout` (`/my-jobs`)
+3. **Customer** — `CustomerLayout` (`/portal/requests`)
+
+## Units completed
+
+* [x] Unit 0 — verify existing app against live API / JWT
+* [x] Unit 1 — safe status PUT + Complete Job (tech status-only body; manager copies code/title/description/priority/SLA)
+* [x] Unit 2 — POST status history after successful PUT (timeline notes)
+* [x] Unit 3 — Customers CRUD UI
+* [x] Unit 4 — Sites CRUD UI
+* [x] Unit 5 — Parts catalog (manager)
+* [x] Unit 6 — Part usage + time logs on job detail
+* [x] Unit 7 — Assign / reassign technician (manager only; `GET /api/users` MANAGER-only)
+* [x] Unit 8 — Reports summary + SLA page (API summary counts only)
+* [x] Unit 9 — Customer Create Request must not 403 (no `POST /api/work-orders` from CUSTOMER)
+* [x] Unit 10 — dead nav / placeholders cleaned for wired routes
+* [x] Unit 11 — manual e2e walk + Playwright `e2e/work-order-lifecycle.spec.ts` (**1 passed**)
+
+## Playwright notes (Unit 11)
+
+* Config: `playwright.config.ts`; script `npm run test:e2e`
+* Requires API already on `:8080`; Vite started by Playwright `webServer`
+* Fixes applied during green run:
+  * Unique technician last name (assign dropdown is first+last only)
+  * Part `selectOption` uses string label, not RegExp
+  * Reports Closed count: invalidate `summary` / `my-jobs` on status+assign; `refetchOnMount`; `expect.poll` in spec
+* Auth helper expects heading **Sign in to MFM** after branding change
+
+## Branding change (UI only)
+
+* Login, layouts, placeholders, `index.html` title → **MFM** + Field Service Management Platform
+* Company line remains Meridian Facilities Management
+* Seed credentials (`admin@keystone.dev`, `Keystone@…`) unchanged (backend Flyway)
+
+## Deploy status (next, simplest path)
+
+No Dockerfile/CI yet. Production needs: managed Postgres + Spring Boot JAR + static Vite `dist/`, prod `VITE_API_BASE_URL`, CORS allowlist for the real UI origin (today only `http://localhost:5173`), and no UI-dev access flag.
+
+## Git commit plan for this session
+
+* [x] Log this work in `docs/myLogs.md` on `backend` (and mirror to `main` docs)
+* [ ] Commit + push UI work on `frontend`
+* [ ] Commit + push this log on `backend`
+* [ ] Update `main` with docs only (do not put Spring Boot or React onto `main`)
