@@ -1058,6 +1058,7 @@ No Dockerfile/CI yet. Production needs: managed Postgres + Spring Boot JAR + sta
 ## Git commit plan for this session
 
 * [x] Log this work in `docs/myLogs.md` on `backend` (and mirror to `main` docs)
-* [ ] Commit + push UI work on `frontend`
-* [ ] Commit + push this log on `backend`
-* [ ] Update `main` with docs only (do not put Spring Boot or React onto `main`)
+* [x] Commit UI work on `frontend` (`9cdba39`)
+* [x] Commit this log on `backend` (`516606c`)
+* [x] Commit docs mirror on `main` (`c2e9c48`) — docs only, no app code
+* [ ] Push `origin/backend`, `origin/frontend`, and `origin/main` (blocked here: no GitHub HTTPS credentials in this environment)
