@@ -71,6 +71,9 @@ Do not run `.\mvnw.cmd` from the repo root. The Maven wrapper is inside `backend
 
 The frontend teammate’s app expects `VITE_API_BASE_URL=http://localhost:8080`. Remaining UI tweaks belong on the `frontend` branch.
 
+
+**Do not merge this branch into `main`.** `main` is docs-only; merging would dump the API onto the docs branch and create large README conflicts.
+
 ## Notes
 
 - Development log: `docs/myLogs.md`
