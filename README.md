@@ -140,12 +140,59 @@ npm run test:e2e
 - `docs/Frontend Specialization.md`  
 - `docs/KEYSTONE_System_Design.pdf`  
 
-## Branch notes
+## How to deploy (simplest path: Render + Netlify)
 
-| Branch | Role now |
+Local run is enough for development. For a public URL, use:
+
+| Piece | Host |
 | --- | --- |
-| `main` | **Supported monorepo** (backend + frontend + docs) |
-| `backend` | Legacy API-only branch (optional; prefer `main`) |
-| `frontend` | Legacy UI-only branch (optional; prefer `main`) |
+| PostgreSQL + API | **Render** (`render.yaml` + `backend/Dockerfile`) |
+| Static UI | **Netlify** (`netlify.toml`) |
 
-Do not put secrets in git. Production still needs real CORS origins, JWT secret, and DB credentials.
+You need free accounts on [Render](https://render.com) and [Netlify](https://www.netlify.com), with this GitHub repo connected to both.
+
+### A — Deploy the API (Render)
+
+1. Push `main` to GitHub (this monorepo).
+2. Render → **New** → **Blueprint** → select this repo → apply `render.yaml`.
+3. Wait until **keystone-db** and **keystone-api** are live.
+4. Open the API URL (looks like `https://keystone-api-xxxx.onrender.com`).
+5. Check health: `https://keystone-api-xxxx.onrender.com/actuator/health` should return UP.
+6. In the **keystone-api** service → Environment → set:
+   - `CORS_ALLOWED_ORIGINS` = your Netlify site origin, e.g. `https://your-site.netlify.app`  
+     (no trailing slash; you can add `,http://localhost:5173` if you still test locally against the hosted API)
+7. Save / redeploy the API after setting CORS.
+
+Flyway runs on boot and creates tables + the seed manager user.
+
+### B — Deploy the UI (Netlify)
+
+1. Netlify → **Add new site** → Import from Git → this repo.
+2. It should read root `netlify.toml` (`base = frontend`, publish `dist`).
+3. Site settings → Environment variables:
+   - `VITE_API_BASE_URL` = `https://keystone-api-xxxx.onrender.com` (your Render API, no trailing slash)
+   - `VITE_ENABLE_UI_DEV_ACCESS` = `false`
+4. Deploy. Open the Netlify URL and sign in with the seed manager (change that password after first login in a real environment).
+
+### C — Wire them together (checklist)
+
+1. Netlify env points at Render API URL.  
+2. Render `CORS_ALLOWED_ORIGINS` includes the Netlify `https://…` origin.  
+3. Hard-refresh the browser and try login.  
+4. First Render request after idle can be slow (free tier sleeps).
+
+### Optional — Docker Compose on your machine
+
+```powershell
+docker compose up --build
+```
+
+Starts Postgres + API on `:8080`. Still run the UI with `cd frontend && npm run dev`.
+
+### Not automated here
+
+- Custom domains / HTTPS certs beyond what Render/Netlify provide  
+- CI GitHub Actions  
+- Production secrets rotation  
+
+Do not commit real production passwords or JWT secrets.

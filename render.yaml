@@ -1,0 +1,56 @@
+# Render Blueprint — simplest hosted API + Postgres for KEYSTONE.
+# Dashboard: New → Blueprint → connect this GitHub repo → apply.
+#
+# After deploy:
+# 1. Copy the API URL (https://keystone-api-xxxx.onrender.com).
+# 2. Set CORS_ALLOWED_ORIGINS to your Netlify origin (no trailing slash),
+#    e.g. https://your-site.netlify.app
+# 3. On Netlify set VITE_API_BASE_URL to that API URL and redeploy the UI.
+#
+# Note: free Render web services sleep when idle; the first request can be slow.
+
+databases:
+  - name: keystone-db
+    plan: free
+    databaseName: keystone
+    user: keystone
+
+services:
+  - type: web
+    name: keystone-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SERVER_PORT
+        value: "8080"
+      # Prefer host pieces so Spring can build a jdbc:postgresql:// URL
+      # (Render's connectionString is postgres:// which JDBC does not accept as-is).
+      - key: DB_HOST
+        fromDatabase:
+          name: keystone-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: keystone-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: keystone-db
+          property: database
+      - key: DB_USERNAME
+        fromDatabase:
+          name: keystone-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: keystone-db
+          property: password
+      - key: JWT_SECRET
+        generateValue: true
+      # Set in the Render dashboard after Netlify exists, e.g.:
+      # https://your-site.netlify.app
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false

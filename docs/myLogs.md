@@ -991,7 +991,7 @@ KEYSTONE
 **Frontend:** 🟢 Units 0–11 on `frontend/` in monorepo (live API + Playwright lifecycle)
 **UI brand:** 🟢 MFM / Meridian Facilities Management (KEYSTONE = project codename only)
 **Local full-stack test:** 🟢 manual + Playwright against `localhost:5173` ↔ `localhost:8080`
-**Deploy:** ⚪ not configured yet (no Docker/CI; CORS still localhost-only)
+**Deploy:** 🟡 scaffolding ready (Render + Netlify configs); public URL not live until you apply Blueprint + Netlify site
 
 ---
 
@@ -1051,9 +1051,17 @@ Work was done in the `frontend/` git worktree (`frontend` branch only). Backend 
 * Company line remains Meridian Facilities Management
 * Seed credentials (`admin@keystone.dev`, `Keystone@…`) unchanged (backend Flyway)
 
-## Deploy status (next, simplest path)
+## Deploy status (simplest path)
 
-No Dockerfile/CI yet. Production needs: managed Postgres + Spring Boot JAR + static Vite `dist/`, prod `VITE_API_BASE_URL`, CORS allowlist for the real UI origin (today only `http://localhost:5173`), and no UI-dev access flag.
+Scaffolding is in the monorepo (not a live public URL until you click deploy on Render/Netlify):
+
+* [x] `CORS_ALLOWED_ORIGINS` env (comma-separated) — production can allow the Netlify origin
+* [x] `backend/Dockerfile` for Render Docker runtime
+* [x] `render.yaml` Blueprint (free Postgres + API)
+* [x] Root `netlify.toml` for static UI build
+* [x] Optional `docker-compose.yml` (local Postgres + API)
+* [x] README deploy steps (Render → Netlify → CORS / `VITE_API_BASE_URL`)
+* [ ] Create Render + Netlify accounts, apply Blueprint, set env, verify login on the public URL
 
 ## Git commit plan for this session
 
@@ -1155,8 +1163,9 @@ git clone -b frontend … keystone-frontend
 * [x] Root README documents one-clone full-stack run
 * [x] Root `.gitignore` covers `.env`, `backend/target`, `frontend/node_modules` / `dist` / Playwright artifacts
 * [x] Updated Overall Status: clone-once is supported via `main`
-* [ ] Push `origin/main` with the monorepo commit
-* [ ] Optional later: Docker Compose; retire or archive legacy `backend` / `frontend` branches after teammates switch
+* [x] Optional local Docker Compose (`docker-compose.yml`) for Postgres + API
+* [ ] Push latest `main` (monorepo + deploy scaffolding) to `origin/main`
+* [ ] Optional later: retire or archive legacy `backend` / `frontend` branches after teammates switch
 
 ---
 
@@ -1172,3 +1181,20 @@ Same guide as root `README.md`. Plain order of operations:
 6. **Stop:** `Ctrl+C` in each terminal when done.
 
 You always need DB + API + UI. The website talks to the API; the API talks to PostgreSQL.
+
+---
+
+# 16/09/2026 — Deploy scaffolding (Render + Netlify)
+
+Simplest hosted path prepared in-repo. **Accounts / click-deploy still required on your side.**
+
+* [x] CORS from `CORS_ALLOWED_ORIGINS` (comma-separated)
+* [x] `backend/Dockerfile` + `.dockerignore`
+* [x] `render.yaml` Blueprint (free DB + Docker API)
+* [x] Root `netlify.toml` (build `frontend`, SPA redirects)
+* [x] `docker-compose.yml` for local DB+API parity
+* [x] README “How to deploy” steps
+* [ ] Apply Render Blueprint and confirm `/actuator/health`
+* [ ] Create Netlify site with `VITE_API_BASE_URL` → Render API
+* [ ] Set Render `CORS_ALLOWED_ORIGINS` to the Netlify `https://` origin
+* [ ] Verify login on the public Netlify URL
