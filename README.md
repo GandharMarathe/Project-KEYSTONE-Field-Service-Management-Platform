@@ -1,12 +1,23 @@
-# KEYSTONE frontend
+# MFM frontend (KEYSTONE project)
 
-React + TypeScript + Vite frontend for Meridian Facilities Management's field-service platform.
+React + TypeScript + Vite frontend for **Meridian Facilities Management** — Field Service Management Platform.
+The repo/project codename remains KEYSTONE; the product UI brand is MFM.
 
 ## Run locally
 
 1. Copy `.env.example` to `.env` and set `VITE_API_BASE_URL` to the Spring Boot API URL.
 2. Install dependencies with `pnpm install` (or `npm install`).
 3. Start the development server with `pnpm dev` (or `npm run dev`).
+
+## End-to-end tests
+
+Playwright repeats the live manager → technician → close walk against `http://localhost:5173` and `http://localhost:8080`. It creates labeled test records through the UI; it does not put mock business data in `src/pages`.
+
+1. Start PostgreSQL and the Spring Boot API on port 8080.
+2. From this folder: `npx playwright install chromium` (first time).
+3. `npm run test:e2e`
+
+Override the local Flyway manager seed with `E2E_MANAGER_EMAIL` / `E2E_MANAGER_PASSWORD` if needed.
 
 ## Implementation notes
 
