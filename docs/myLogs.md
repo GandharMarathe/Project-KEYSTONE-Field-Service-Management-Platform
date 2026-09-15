@@ -986,12 +986,13 @@ KEYSTONE
 **JWT:** 🟢 Operational
 **Security:** 🟢 Major discovered issues fixed
 **Core APIs:** 🟢 Implemented and actively tested
-**Git:** 🟢 three-branch layout (`main` docs, `backend` API+docs, `frontend` UI)
-**Frontend:** 🟢 Units 0–11 done on `frontend` (live API + Playwright lifecycle)
-**UI brand:** 🟢 MFM / Meridian Facilities Management (KEYSTONE remains project codename)
+**Git model:** 🟢 three-branch layout (`main` = docs, `backend` = API+docs, `frontend` = UI)
+**Clone once?** 🔴 **No** — default `git clone` of `main` is docs only; full stack needs `backend` **and** `frontend` (or worktrees). See section below.
+**Frontend:** 🟢 Units 0–11 done on `frontend` (live API + Playwright lifecycle); pushed to `origin/frontend`
+**UI brand:** 🟢 MFM / Meridian Facilities Management (KEYSTONE = project codename only)
 **Local full-stack test:** 🟢 manual + Playwright against `localhost:5173` ↔ `localhost:8080`
 **Deploy:** ⚪ not configured yet (no Docker/CI; CORS still localhost-only)
-**`main`:** docs-only; keep API off this branch
+**`main`:** docs-only hub — do not merge app branches into it
 
 ---
 
@@ -1058,10 +1059,10 @@ No Dockerfile/CI yet. Production needs: managed Postgres + Spring Boot JAR + sta
 ## Git commit plan for this session
 
 * [x] Log this work in `docs/myLogs.md` on `backend` (and mirror to `main` docs)
-* [x] Commit UI work on `frontend` (`9cdba39`)
-* [x] Commit this log on `backend` (`516606c`)
-* [x] Commit docs mirror on `main` (`c2e9c48`) — docs only, no app code
-* [ ] Push `origin/backend`, `origin/frontend`, and `origin/main` (blocked here: no GitHub HTTPS credentials in this environment)
+* [x] Commit UI work on `frontend` (`9cdba39`) → pushed to `origin/frontend`
+* [x] Commit integration log on `backend` → pushed to `origin/backend`
+* [x] Commit docs mirror on `main` (docs only, no app code)
+* [ ] Keep `main` docs in sync when clone-layout notes change (push `origin/main` if ahead)
 
 ---
 
@@ -1072,11 +1073,24 @@ No Dockerfile/CI yet. Production needs: managed Postgres + Spring Boot JAR + sta
 * [x] Kept API branch free of a nested `frontend/` folder
 * [x] `main` carries docs + clean README; **do not merge** `backend`/`frontend` into `main`
 * [x] README conflict between marketing `main` and operational `backend` resolved by separate READMEs per branch
-* [ ] Push still requires GitHub credentials on the machine that has them
+* [x] `origin/backend` and `origin/frontend` updated with session work
+* [ ] Confirm `origin/main` has latest clone-layout / myLogs notes after push
 
 ---
 
 # 16/09/2026 — Can someone `git clone` and get the whole app?
+
+## Team takeaway (read this first)
+
+**Someone who only runs `git clone <repo>` (default `main`) does not get a complete app on their machine.** They get documentation. That is intentional with the current branch model, but it is **not** the usual “one clone = full codebase” setup.
+
+| Goal | What to do |
+| --- | --- |
+| Read docs / project overview | Clone `main` (or open GitHub default branch) |
+| Run the API | Clone `-b backend` |
+| Run the UI | Clone `-b frontend` |
+| Run full stack locally | Clone **both** `backend` and `frontend` (or one repo + `git worktree`), then Postgres + API + Vite |
+| True “one clone, whole app” later | Migrate to a **monorepo on `main`** (`backend/` + `frontend/` + `docs/`) — not done yet |
 
 ## Short answer
 
@@ -1136,12 +1150,12 @@ git clone -b frontend https://github.com/GandharMarathe/Project-KEYSTONE-Field-S
 Or one clone + worktrees:
 
 ```powershell
-git clone -b backend … keystone
+git clone -b backend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git keystone
 cd keystone
 git worktree add ../keystone-frontend frontend
 ```
 
-Then: start PostgreSQL → run API from `keystone-backend/backend` → run UI from `keystone-frontend` with `VITE_API_BASE_URL=http://localhost:8080`.
+Then: start PostgreSQL → run API from `keystone-backend/backend` (or `keystone/backend`) → run UI from `keystone-frontend` with `VITE_API_BASE_URL=http://localhost:8080`.
 
 ## If we want “one clone = whole app” later
 
