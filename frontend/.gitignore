@@ -1,0 +1,7 @@
+node_modules
+.env
+KEYSTONE_Frontend_Development_Specification.md
+/test-results
+/playwright-report
+/blob-report
+/playwright/.cache

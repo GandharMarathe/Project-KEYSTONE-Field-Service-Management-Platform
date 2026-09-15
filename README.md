@@ -1,81 +1,84 @@
 # Project KEYSTONE — Field Service Management Platform
 
-Development repository for **Project KEYSTONE**, a field service management platform for **Meridian Facilities Management (MFM)**.
+Monorepo for **Project KEYSTONE**, a field service management platform for **Meridian Facilities Management (MFM)**.
 
-The product UI brand is **MFM**. **KEYSTONE** remains the project / repository codename.
+- **UI brand:** MFM / Meridian Facilities Management  
+- **Project codename:** KEYSTONE  
 
-## Three-branch layout (important)
-
-These branches are **not** the same checkout. Do not merge app code into `main`.
-
-**One `git clone` of this repo is not a complete runnable app.** Default `main` is docs only. To run MFM locally you need the `backend` clone **and** the `frontend` clone (or git worktrees). Details: `docs/myLogs.md` → section *Can someone git clone and get the whole app?*
-
-The usual industry default for “clone once, get everything” is a **monorepo on one branch** (`backend/` + `frontend/` folders on `main`). This project intentionally uses three branches instead; a monorepo migration is optional later.
-
-| Branch | What it contains | Clone |
-| --- | --- | --- |
-| `main` | **Docs only** (this branch). A plain `git clone` does **not** include the app. | default |
-| `backend` | Spring Boot API + `docs`. No `frontend/` folder. | `git clone -b backend …` |
-| `frontend` | React / Vite UI at the **root** of that branch. | `git clone -b frontend … keystone-frontend` |
+## One clone = full codebase
 
 ```powershell
-# Docs (this branch)
 git clone https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git
-
-# API
-git clone -b backend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git keystone-backend
-
-# UI
-git clone -b frontend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git keystone-frontend
+cd Project-KEYSTONE-Field-Service-Management-Platform
 ```
 
-## Product scope
+```text
+/
+  backend/     Spring Boot API
+  frontend/    React + TypeScript + Vite (MFM UI)
+  docs/        Specs, myLogs, PDFs
+  README.md    This file
+```
 
-Responsive, role-based field service management for dispatchers, technicians, managers, and customers:
+The historical `backend` and `frontend` **branches** may still exist for older clones; **`main` is now the supported full-stack tree.**
 
-- Work order management, assignment, status workflow, priorities, SLA
-- Technician execution (time logs, parts usage)
-- Customer and site management
-- Parts catalog / inventory usage
-- Reports and operational summaries
-- Append-only status history / audit trail
+## Run locally
 
-### Portals
+### 1. PostgreSQL
 
-1. **Manager / Dispatcher** — operations dashboard
-2. **Technician** — field “My Jobs” app
-3. **Customer** — self-service request portal
+Create database `keystone` on `127.0.0.1:5432`. Credentials: copy `backend/.env.example` → `backend/.env` (never commit `.env`).
 
-## Suggested technology stack
+### 2. API
 
-- Frontend: React + TypeScript + Vite
-- Backend: Spring Boot / Java 21+
-- Database: PostgreSQL + Flyway
-- Auth: Spring Security + JWT
-- ORM: Spring Data JPA / Hibernate
+```powershell
+cd backend
+.\mvnw.cmd spring-boot:run
+```
 
-## Project documents (`docs/`)
+Linux/macOS: `./mvnw spring-boot:run`  
+API: http://localhost:8080
 
-- Development log: `docs/myLogs.md`
-- Backend specialization: `docs/Backend Specialization.md`
-- Frontend specialization: `docs/Frontend Specialization.md`
-- System design: `docs/KEYSTONE_System_Design.pdf`
-- Project brief: `docs/Zidio_Development_Project_Keystone.pdf`
+### 3. UI
 
-## Implementation status
+```powershell
+cd frontend
+copy .env.example .env
+# VITE_API_BASE_URL=http://localhost:8080
+npm install
+npm run dev
+```
 
-- Backend API: core complete and tested locally
-- Frontend (`frontend` branch): Units 0–11 complete against live API; Playwright lifecycle e2e green
-- UI brand: MFM / Meridian Facilities Management
-- Deploy: not configured yet (local `localhost:5173` ↔ `localhost:8080` is the supported path)
+UI: http://localhost:5173 (CORS allowlist is localhost:5173)
 
-## Merge / push rules (keep this clean)
+### E2E
 
-- Push **`frontend`** for UI commits only
-- Push **`backend`** for API + shared docs log
-- Push **`main`** for docs / README only — **do not** merge `backend` or `frontend` into `main` (that dumps the whole app onto the docs branch and creates large conflicts)
-- Never commit `.env`, `target/`, `node_modules/`, or a nested `frontend/` folder on `backend`
+With API already on `:8080`:
 
-## Reference
+```powershell
+cd frontend
+npx playwright install chromium
+npm run test:e2e
+```
 
-System Design Architecture: https://wasp-hall-12061834.figma.site/
+## Portals
+
+1. Manager / Dispatcher — operations dashboard  
+2. Technician — field My Jobs  
+3. Customer — self-service portal  
+
+## Documents
+
+- `docs/myLogs.md` — development log  
+- `docs/Backend Specialization.md`  
+- `docs/Frontend Specialization.md`  
+- `docs/KEYSTONE_System_Design.pdf`  
+
+## Branch notes
+
+| Branch | Role now |
+| --- | --- |
+| `main` | **Supported monorepo** (backend + frontend + docs) |
+| `backend` | Legacy API-only branch (optional; prefer `main`) |
+| `frontend` | Legacy UI-only branch (optional; prefer `main`) |
+
+Do not put secrets in git. Production still needs real CORS origins, JWT secret, and DB credentials.

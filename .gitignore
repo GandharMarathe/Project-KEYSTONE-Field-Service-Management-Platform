@@ -1,0 +1,27 @@
+### Local / IDE ###
+.agents/
+.cursor/
+.idea/
+*.iml
+
+### Secrets ###
+.env
+backend/.env
+frontend/.env
+
+### Backend ###
+backend/target/
+backend/*.log
+
+### Frontend ###
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/
+frontend/playwright/.cache/
+frontend/.pnpm-store/
+
+### OS ###
+.DS_Store
+Thumbs.db
