@@ -986,13 +986,12 @@ KEYSTONE
 **JWT:** 🟢 Operational
 **Security:** 🟢 Major discovered issues fixed
 **Core APIs:** 🟢 Implemented and actively tested
-**Git model:** 🟢 three-branch layout (`main` = docs, `backend` = API+docs, `frontend` = UI)
-**Clone once?** 🔴 **No** — default `git clone` of `main` is docs only; full stack needs `backend` **and** `frontend` (or worktrees). See section below.
-**Frontend:** 🟢 Units 0–11 done on `frontend` (live API + Playwright lifecycle); pushed to `origin/frontend`
+**Git model:** 🟢 **`main` is now a monorepo** (`backend/` + `frontend/` + `docs/`) — one clone gets the full codebase
+**Legacy branches:** `backend` / `frontend` may still exist for older clones; prefer `main`
+**Frontend:** 🟢 Units 0–11 on `frontend/` in monorepo (live API + Playwright lifecycle)
 **UI brand:** 🟢 MFM / Meridian Facilities Management (KEYSTONE = project codename only)
 **Local full-stack test:** 🟢 manual + Playwright against `localhost:5173` ↔ `localhost:8080`
 **Deploy:** ⚪ not configured yet (no Docker/CI; CORS still localhost-only)
-**`main`:** docs-only hub — do not merge app branches into it
 
 ---
 
@@ -1082,27 +1081,24 @@ No Dockerfile/CI yet. Production needs: managed Postgres + Spring Boot JAR + sta
 
 ## Team takeaway (read this first)
 
-**Someone who only runs `git clone <repo>` (default `main`) does not get a complete app on their machine.** They get documentation. That is intentional with the current branch model, but it is **not** the usual “one clone = full codebase” setup.
+**`main` is now a monorepo.** One `git clone` of the default branch gives `backend/` + `frontend/` + `docs/`.
 
 | Goal | What to do |
 | --- | --- |
-| Read docs / project overview | Clone `main` (or open GitHub default branch) |
-| Run the API | Clone `-b backend` |
-| Run the UI | Clone `-b frontend` |
-| Run full stack locally | Clone **both** `backend` and `frontend` (or one repo + `git worktree`), then Postgres + API + Vite |
-| True “one clone, whole app” later | Migrate to a **monorepo on `main`** (`backend/` + `frontend/` + `docs/`) — not done yet |
+| Get the whole codebase | Clone `main` (default) |
+| Run the API | `cd backend` → Maven / Spring Boot |
+| Run the UI | `cd frontend` → `npm install` / `npm run dev` |
+| Legacy branch clones | Optional; prefer monorepo `main` going forward |
 
 ## Short answer
 
-**No.** With the current three-branch layout, one `git clone` does **not** give a complete runnable app (UI + API + docs together).
+**Yes (after monorepo migration).** Cloning default **`main`** gives the full codebase: `backend/` + `frontend/` + `docs/`. You still start Postgres, the API, and Vite as separate processes (or Compose later).
 
 | If they clone… | What they get |
 | --- | --- |
-| `main` (default) | Docs / README only — **no** Spring Boot, **no** React app |
-| `-b backend` | API under `backend/` + docs — **no** UI |
-| `-b frontend` | React/Vite UI at branch root — **no** API |
-
-So a new teammate must clone **two** app branches (or use git worktrees) and run Postgres + API + Vite separately.
+| `main` (default) | **Full monorepo** — API + UI + docs |
+| `-b backend` (legacy) | API-oriented tree only |
+| `-b frontend` (legacy) | UI-oriented tree only |
 
 ## What is “correct / standard”?
 
@@ -1131,38 +1127,33 @@ One default branch (often `main`) contains both apps in folders, e.g.:
 - Each clone is one piece; README links the others
 - Standard for larger orgs / separate release cadences
 
-### 3. What KEYSTONE does today (three branches in one GitHub repo)
+### 3. What KEYSTONE does now (monorepo on `main`)
 
-- Same remote, **different branch trees** (not a shared monorepo folder layout on `main`)
-- Chosen so docs (`main`), API (`backend`), and UI (`frontend`) stay isolated
-- **Trade-off:** you cannot get the full stack from a single default clone
+- **`main`:** `backend/` + `frontend/` + `docs/` — one clone for the whole product
+- Legacy `backend` / `frontend` branches: optional compatibility; new work should land on `main`
 
-## Correct way to get the full stack *today*
+## Correct way to get the full stack *today* (updated)
 
-```powershell
-# API + docs
-git clone -b backend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git keystone-backend
-
-# UI (separate folder)
-git clone -b frontend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git keystone-frontend
-```
-
-Or one clone + worktrees:
+**Preferred — monorepo on `main` (done 16/09/2026):**
 
 ```powershell
-git clone -b backend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git keystone
-cd keystone
-git worktree add ../keystone-frontend frontend
+git clone https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git
+cd Project-KEYSTONE-Field-Service-Management-Platform
+# run backend/ then frontend/ as documented in root README
 ```
 
-Then: start PostgreSQL → run API from `keystone-backend/backend` (or `keystone/backend`) → run UI from `keystone-frontend` with `VITE_API_BASE_URL=http://localhost:8080`.
+**Legacy — two branch clones** (only if someone still uses old `backend` / `frontend` branches):
 
-## If we want “one clone = whole app” later
+```powershell
+git clone -b backend … keystone-backend
+git clone -b frontend … keystone-frontend
+```
 
-Recommended migration (not done yet):
+## Monorepo migration — DONE (16/09/2026)
 
-1. Put `backend/` + `frontend/` + `docs/` together on **`main`** (true monorepo), **or**
-2. Keep separate repos and document both clone URLs, **or**
-3. Add Docker Compose that builds/runs both from a monorepo layout
-
-Until then: treat **two clones (or worktrees)** as the supported full-stack setup. Do not expect `git clone` of `main` alone to run MFM.
+* [x] Put `backend/` + `frontend/` + `docs/` together on **`main`**
+* [x] Root README documents one-clone full-stack run
+* [x] Root `.gitignore` covers `.env`, `backend/target`, `frontend/node_modules` / `dist` / Playwright artifacts
+* [x] Updated Overall Status: clone-once is supported via `main`
+* [ ] Push `origin/main` with the monorepo commit
+* [ ] Optional later: Docker Compose; retire or archive legacy `backend` / `frontend` branches after teammates switch

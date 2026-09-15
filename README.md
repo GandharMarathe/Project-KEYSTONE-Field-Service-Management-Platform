@@ -1,5 +1,8 @@
 # Project KEYSTONE — Field Service Management Platform
 
+> **Preferred checkout:** clone default **`main`** (monorepo: `backend/` + `frontend/` + `docs/`). This `backend` branch is legacy API-focused; new full-stack work should use `main`.
+
+
 This GitHub repo has three branches. They are not the same checkout.
 
 | Branch | What it contains |
