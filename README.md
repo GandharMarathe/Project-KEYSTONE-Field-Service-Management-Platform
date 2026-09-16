@@ -1,5 +1,7 @@
 # MFM frontend (KEYSTONE project)
 
+This folder lives on **`main`** as part of the monorepo (`backend/` + `frontend/` + `docs/`).
+
 React + TypeScript + Vite frontend for **Meridian Facilities Management** — Field Service Management Platform.
 The repo/project codename remains KEYSTONE; the product UI brand is MFM.
 
