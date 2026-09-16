@@ -8,6 +8,8 @@
 .env
 backend/.env
 frontend/.env
+docs/render-env.local.md
+docs/*secrets*.local.md
 
 ### Backend ###
 backend/target/

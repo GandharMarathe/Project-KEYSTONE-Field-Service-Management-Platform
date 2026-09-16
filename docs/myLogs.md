@@ -1224,13 +1224,23 @@ Render was created from the Blueprint against the monorepo (`main`).
 
 ## Seed / login credentials (do not lose these)
 
-Flyway only seeds **one** user (MANAGER). Roles `DISPATCHER` and `TECHNICIAN` are **not** pre-seeded — create them in the UI after you sign in as manager.
+### Straight answer: who can log in?
 
-### Seeded account (works local + hosted after Flyway runs)
+App login roles (enum + Users UI): **MANAGER**, **DISPATCHER**, **TECHNICIAN**, **CUSTOMER**.
+
+| Who you asked about | Login email / password? | Reality |
+| --- | --- | --- |
+| **Admin / Manager** | `admin@keystone.dev` / `Keystone@2026Admin!` | **Same account.** Flyway seeds one **MANAGER**. That *is* the bootstrap admin. There is no separate “admin” user. |
+| **Technician** | **None seeded** | Create in **Users** while logged in as manager. You pick email + password. |
+| **Dispatcher** | **None seeded** | Same — create via Users. |
+| **Customer** (login role) | **None seeded** | Role exists (`CUSTOMER`) and can be created in Users, but there is **no** Flyway seed customer login. A “Customer” *business record* (company/site) is different from a `CUSTOMER` *user account*. |
+| **Extra admins** | Create more **MANAGER** users in Users | Only if you add them yourself. |
+
+### Seeded account (only one — local + hosted after Flyway)
 
 | Field | Value |
 | --- | --- |
-| Role | **MANAGER** |
+| Role | **MANAGER** (bootstrap admin) |
 | Email | `admin@keystone.dev` |
 | Password | `Keystone@2026Admin!` |
 | Source | `backend/.../V2__seed_initial_manager.sql` (+ `V3` email typo fix) |
@@ -1240,25 +1250,23 @@ Use this on:
 * Local: `http://localhost:5173`
 * Hosted: `https://mfmfsmp.netlify.app/login`
 
-### Other roles (create yourself — there are no secret seed passwords for them)
+### Create the other roles (required for technician / customer / dispatcher logins)
 
-App roles in code: **MANAGER**, **DISPATCHER**, **TECHNICIAN**.
+1. Sign in as **MANAGER** above.
+2. Open **Users** (manager-only screen).
+3. Add users. Suggested team convention (you choose real passwords and write them down):
 
-1. Sign in as the seed **MANAGER** above.
-2. Open **Users** (manager-only).
-3. Create accounts you need, for example:
-
-| Role | Suggested email (example only) | Password | Who creates it |
+| Role | Example email | Password | Status |
 | --- | --- | --- | --- |
-| MANAGER | `admin@keystone.dev` | `Keystone@2026Admin!` | **Already seeded** |
-| DISPATCHER | e.g. `dispatch@keystone.dev` | **You choose** (min 8 chars in UI) | Manager via Users page |
-| TECHNICIAN | e.g. `tech@keystone.dev` | **You choose** (min 8 chars in UI) | Manager via Users page |
+| MANAGER | `admin@keystone.dev` | `Keystone@2026Admin!` | **Seeded — use this** |
+| DISPATCHER | e.g. `dispatch@keystone.dev` | **You choose** (≥ 8 chars) | Create in UI |
+| TECHNICIAN | e.g. `tech@keystone.dev` | **You choose** (≥ 8 chars) | Create in UI |
+| CUSTOMER | e.g. `cust1@keystone.dev` | **You choose** (≥ 8 chars) | Create in UI |
 
-Write down dispatcher/technician passwords somewhere safe for the team — the app does **not** store a second seed file for them.
+There is a old local API test payload mentioning `cust1@keystone.dev` / `Keystone@2026Cust!` under `backend/user-customer-payload.json` — that is **not** a Flyway seed and is **not** guaranteed on the hosted Render DB unless someone POSTed it there. Prefer creating users in the live UI and recording passwords in a password manager.
 
-**Local DB password** (Postgres via compose / defaults — not a login for the website):
-
-* DB user/password pattern from compose / `application.properties` defaults: password `Keystone@2026Strong!` (local/dev only; Render uses its own managed DB password).
+**Local Postgres** (compose / defaults — website login is separate): password `Keystone@2026Strong!`.  
+**Hosted Postgres** password: see gitignored `docs/render-env.local.md` or Render → Environment (never commit it).
 
 ## What broke during deploy, and what we patched
 
@@ -1312,12 +1320,22 @@ Write down dispatcher/technician passwords somewhere safe for the team — the a
 | `VITE_API_BASE_URL` | `https://keystone-api-j2qc.onrender.com` |
 | `VITE_ENABLE_UI_DEV_ACCESS` | `false` (optional; toml default) |
 
-### Render (Web Service → Environment)
+### Render (Web Service → Environment) — live values 16/09/2026
 
-| Key | Value (current) |
+Non-secret / shareable in git:
+
+| Key | Value |
 | --- | --- |
 | `CORS_ALLOWED_ORIGINS` | `https://mfmfsmp.netlify.app` |
-| DB / JWT / etc. | From Blueprint / Render Postgres link (do not commit secrets) |
+| `DB_HOST` | `dpg-dakt1ljm8hqs73ejb480-a` |
+| `DB_NAME` | `keystone_u1el` |
+| `DB_PORT` | `5432` |
+| `DB_USERNAME` | `keystone` |
+| `SERVER_PORT` | `8080` |
+
+**Secrets** (`DB_PASSWORD`, `JWT_SECRET`): live in Render → Environment. Also copied for local eyes only into **`docs/render-env.local.md`** (gitignored — will not be pushed). Do **not** paste those into `myLogs.md` or commit them.
+
+If this chat or a screenshot already leaked them, rotate `JWT_SECRET` / DB password in Render when you can.
 
 ## Day-to-day after this (not hectic)
 
@@ -1339,4 +1357,5 @@ Render free web services **spin down** when idle. First request after idle can t
 * [x] CORS fixed for Netlify origin
 * [x] pnpm lockfile sync committed (`ac826f0`)
 * [x] Seed manager credentials recorded in this log (not dropped)
-* [x] Explained how DISPATCHER / TECHNICIAN accounts are created (no seed passwords invented)
+* [x] Explained how DISPATCHER / TECHNICIAN / CUSTOMER accounts are created (no seed passwords invented)
+* [x] Render env keys documented; secrets kept in gitignored `docs/render-env.local.md`
