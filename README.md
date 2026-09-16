@@ -1,59 +1,54 @@
 # Project KEYSTONE — Field Service Management Platform
 
-> **Preferred checkout:** clone default **`main`** (monorepo: `backend/` + `frontend/` + `docs/`). This `backend` branch is legacy API-focused; new full-stack work should use `main`.
+Monorepo for **Project KEYSTONE**, a field service management platform for **Meridian Facilities Management (MFM)**.
 
+- **UI brand:** MFM / Meridian Facilities Management  
+- **Project codename:** KEYSTONE  
 
-This GitHub repo has three branches. They are not the same checkout.
-
-| Branch | What it contains |
-| --- | --- |
-| `main` | Docs only. A plain `git clone` does **not** include the app. |
-| `backend` | Spring Boot API + `docs`. **This branch.** No frontend folder. |
-| `frontend` | React / Vite UI at the **root** of that branch (frontend teammate). |
-
-## Clone this branch (backend)
+## One clone = full codebase
 
 ```powershell
-git clone -b backend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git
+git clone https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git
 cd Project-KEYSTONE-Field-Service-Management-Platform
 ```
 
-The UI is a separate clone:
-
-```powershell
-git clone -b frontend https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git keystone-frontend
+```text
+/
+  backend/     Spring Boot API
+  frontend/    React + TypeScript + Vite (MFM UI)
+  docs/        Specs, myLogs, PDFs
+  README.md    This file
 ```
 
-## How to run the API
+The historical `backend` and `frontend` **branches** may still exist for older clones; **`main` is now the supported full-stack tree.**
 
-Start PostgreSQL first, then this backend.
+## How to start and run the app (start → finish)
 
-### 1. PostgreSQL
+You need **three things running**: PostgreSQL (database), the backend API, and the frontend website. Use **two terminal windows** after the database is up.
 
-`psql` is the SQL client. Start the **Windows service** first. On this machine it is PostgreSQL 18:
-
-```powershell
-Get-Service *postgres*
-Start-Service postgresql-x64-18
-```
-
-The service is Automatic, so it is often already `Running`. You need database `keystone` on `127.0.0.1:5432`.
-
-Optional client (you will be prompted for the local password; do not paste it into git):
+### Step 0 — Get the code
 
 ```powershell
-psql -h 127.0.0.1 -U postgres -d keystone
+git clone https://github.com/GandharMarathe/Project-KEYSTONE-Field-Service-Management-Platform.git
+cd Project-KEYSTONE-Field-Service-Management-Platform
 ```
 
-If `keystone` does not exist yet:
+(Use branch `main`. That folder already has `backend/`, `frontend/`, and `docs/`.)
+
+### Step 1 — Start PostgreSQL and create the database
+
+1. Start the PostgreSQL service on your machine.
+2. Make sure a database named **`keystone`** exists on `127.0.0.1:5432`.
+
+If it does not exist yet:
 
 ```powershell
 psql -h 127.0.0.1 -U postgres -d postgres -c "CREATE DATABASE keystone;"
 ```
 
-Local DB username/password live only in `backend/.env` (copy from `backend/.env.example`). Never commit `.env`.
+### Step 2 — Start the backend (API)
 
-### 2. Backend
+Open a terminal in the project root:
 
 ```powershell
 cd backend
@@ -61,31 +56,143 @@ copy .env.example .env
 .\mvnw.cmd spring-boot:run
 ```
 
-On macOS/Linux: `./mvnw spring-boot:run`
+On Linux/macOS:
 
-Wait until Spring Boot finishes starting.
+```bash
+cd backend
+cp .env.example .env
+./mvnw spring-boot:run
+```
 
-- API: http://localhost:8080
-- Login: `POST` http://localhost:8080/api/auth/login
+Wait until it finishes starting. Leave this terminal open.
 
-Spring Boot does not load `.env` automatically. Export `SERVER_PORT`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, and `JWT_SECRET`, or use the local-dev defaults in `backend/src/main/resources/application.properties`.
+- API is at: http://localhost:8080  
+- Tables are created automatically by Flyway on first start.
 
-Do not run `.\mvnw.cmd` from the repo root. The Maven wrapper is inside `backend`.
+**Seed manager login (local only):**  
+email `admin@keystone.dev` — password from the Flyway seed / team notes (`Keystone@2026Admin!` in local seed).
 
-The frontend teammate’s app expects `VITE_API_BASE_URL=http://localhost:8080`. Remaining UI tweaks belong on the `frontend` branch.
+### Step 3 — Start the frontend (website)
 
+Open a **second** terminal in the project root:
 
-**Do not merge this branch into `main`.** `main` is docs-only; merging would dump the API onto the docs branch and create large README conflicts.
+```powershell
+cd frontend
+copy .env.example .env
+npm install
+npm run dev
+```
 
+On Linux/macOS use `cp .env.example .env` instead of `copy`.
 
-**Note:** A single `git clone` does **not** give UI + API together. Clone `-b backend` and `-b frontend` (or use worktrees). See `docs/myLogs.md` → *Can someone git clone and get the whole app?* A monorepo on one branch is the usual “clone once” standard; this repo uses three branches by design.
+Leave this terminal open.
 
-## Notes
+- Website is at: **http://localhost:5173**  
+- Open that URL in the browser (use `localhost`, not `127.0.0.1`, so CORS works).
 
-- Development log: `docs/myLogs.md`
-- Project brief: `docs/Zidio_Development_Project_Keystone.pdf`
-- Backend specification: `docs/Backend Specialization.md`
-- Frontend specification: `docs/Frontend Specialization.md`
-- System design: `docs/KEYSTONE_System_Design.pdf`
-- Backend env template: `backend/.env.example`
-- Backend API test payloads: `backend/*-payload.json`
+### Step 4 — Use the app
+
+1. Go to http://localhost:5173  
+2. Sign in with the manager account above (or another user you create in the UI).  
+3. You should land on the dashboard and can create customers, sites, work orders, etc.
+
+| Role | Where you land |
+| --- | --- |
+| Manager / Dispatcher | Dashboard / work orders |
+| Technician | My Jobs |
+| Customer | Customer portal |
+
+### Step 5 — Stop everything
+
+- Frontend: `Ctrl+C` in the frontend terminal  
+- Backend: `Ctrl+C` in the backend terminal  
+- PostgreSQL: leave running, or stop the Windows/Linux service if you want
+
+### If something fails
+
+| Problem | Check |
+| --- | --- |
+| Backend will not start | Is PostgreSQL running? Does DB `keystone` exist? |
+| Login / API errors in the browser | Is backend still on :8080? Is `frontend/.env` using `VITE_API_BASE_URL=http://localhost:8080`? |
+| Blank CORS / blocked requests | Use **http://localhost:5173**, not http://127.0.0.1:5173 |
+| `npm` errors | Run `npm install` again inside `frontend/` |
+
+### Optional — Playwright e2e test
+
+With PostgreSQL + backend already running:
+
+```powershell
+cd frontend
+npx playwright install chromium
+npm run test:e2e
+```
+
+## Portals
+
+1. Manager / Dispatcher — operations dashboard  
+2. Technician — field My Jobs  
+3. Customer — self-service portal  
+
+## Documents
+
+- `docs/myLogs.md` — development log  
+- `docs/Backend Specialization.md`  
+- `docs/Frontend Specialization.md`  
+- `docs/KEYSTONE_System_Design.pdf`  
+
+## How to deploy (simplest path: Render + Netlify)
+
+Local run is enough for development. For a public URL, use:
+
+| Piece | Host |
+| --- | --- |
+| PostgreSQL + API | **Render** (`render.yaml` + `backend/Dockerfile`) |
+| Static UI | **Netlify** (`netlify.toml`) |
+
+You need free accounts on [Render](https://render.com) and [Netlify](https://www.netlify.com), with this GitHub repo connected to both.
+
+### A — Deploy the API (Render)
+
+1. Push `main` to GitHub (this monorepo).
+2. Render → **New** → **Blueprint** → select this repo → apply `render.yaml`.
+3. Wait until **keystone-db** and **keystone-api** are live.
+4. Open the API URL (looks like `https://keystone-api-xxxx.onrender.com`).
+5. Check health: `https://keystone-api-xxxx.onrender.com/actuator/health` should return UP.
+6. In the **keystone-api** service → Environment → set:
+   - `CORS_ALLOWED_ORIGINS` = your Netlify site origin, e.g. `https://your-site.netlify.app`  
+     (no trailing slash; you can add `,http://localhost:5173` if you still test locally against the hosted API)
+7. Save / redeploy the API after setting CORS.
+
+Flyway runs on boot and creates tables + the seed manager user.
+
+### B — Deploy the UI (Netlify)
+
+1. Netlify → **Add new site** → Import from Git → this repo.
+2. It should read root `netlify.toml` (`base = frontend`, publish `dist`).
+3. Site settings → Environment variables:
+   - `VITE_API_BASE_URL` = `https://keystone-api-xxxx.onrender.com` (your Render API, no trailing slash)
+   - `VITE_ENABLE_UI_DEV_ACCESS` = `false`
+4. Deploy. Open the Netlify URL and sign in with the seed manager (change that password after first login in a real environment).
+
+### C — Wire them together (checklist)
+
+1. Netlify env points at Render API URL.  
+2. Render `CORS_ALLOWED_ORIGINS` includes the Netlify `https://…` origin.  
+3. Hard-refresh the browser and try login.  
+4. First Render request after idle can be slow (free tier sleeps).
+
+### Optional — Docker Compose on your machine
+
+```powershell
+docker compose up --build
+```
+
+Starts Postgres + API on `:8080`. Still run the UI with `cd frontend && npm run dev`.
+
+### Not automated here
+
+- Custom domains / HTTPS certs beyond what Render/Netlify provide  
+- CI GitHub Actions  
+- Production secrets rotation  
+
+Do not commit real production passwords or JWT secrets.

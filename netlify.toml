@@ -1,0 +1,19 @@
+# Netlify — static MFM UI. Link this repo, set base to frontend (or use this file from repo root).
+# Required env in Netlify UI (Site settings → Environment variables):
+#   VITE_API_BASE_URL = https://keystone-api-xxxx.onrender.com
+#   VITE_ENABLE_UI_DEV_ACCESS = false
+
+[build]
+  base = "frontend"
+  command = "npm ci && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  VITE_ENABLE_UI_DEV_ACCESS = "false"
+
+# SPA: all non-file routes serve index.html so React Router works.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

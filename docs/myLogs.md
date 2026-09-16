@@ -991,7 +991,7 @@ KEYSTONE
 **Frontend:** 🟢 Units 0–11 on `frontend/` in monorepo (live API + Playwright lifecycle)
 **UI brand:** 🟢 MFM / Meridian Facilities Management (KEYSTONE = project codename only)
 **Local full-stack test:** 🟢 manual + Playwright against `localhost:5173` ↔ `localhost:8080`
-**Deploy:** ⚪ not configured yet (no Docker/CI; CORS still localhost-only)
+**Deploy:** 🟡 scaffolding ready (Render + Netlify configs); public URL not live until you apply Blueprint + Netlify site
 
 ---
 
@@ -1049,11 +1049,21 @@ Work was done in the `frontend/` git worktree (`frontend` branch only). Backend 
 
 * Login, layouts, placeholders, `index.html` title → **MFM** + Field Service Management Platform
 * Company line remains Meridian Facilities Management
-* Seed credentials (`admin@keystone.dev`, `Keystone@…`) unchanged (backend Flyway)
+* Seed credentials unchanged (backend Flyway) — full values recorded in **LIVE deploy** section:
+  * MANAGER: `admin@keystone.dev` / `Keystone@2026Admin!`
+  * DISPATCHER / TECHNICIAN: not seeded; create via Users UI after manager login
 
-## Deploy status (next, simplest path)
+## Deploy status (simplest path)
 
-No Dockerfile/CI yet. Production needs: managed Postgres + Spring Boot JAR + static Vite `dist/`, prod `VITE_API_BASE_URL`, CORS allowlist for the real UI origin (today only `http://localhost:5173`), and no UI-dev access flag.
+Scaffolding is in the monorepo. **Live deploy completed 16/09/2026** (see section below for URLs, patches, and login creds):
+
+* [x] `CORS_ALLOWED_ORIGINS` env (comma-separated) — production can allow the Netlify origin
+* [x] `backend/Dockerfile` for Render Docker runtime
+* [x] `render.yaml` Blueprint (free Postgres + API)
+* [x] Root `netlify.toml` for static UI build
+* [x] Optional `docker-compose.yml` (local Postgres + API)
+* [x] README deploy steps (Render → Netlify → CORS / `VITE_API_BASE_URL`)
+* [x] Create Render + Netlify accounts, apply Blueprint, set env, verify login on the public URL
 
 ## Git commit plan for this session
 
@@ -1155,5 +1165,197 @@ git clone -b frontend … keystone-frontend
 * [x] Root README documents one-clone full-stack run
 * [x] Root `.gitignore` covers `.env`, `backend/target`, `frontend/node_modules` / `dist` / Playwright artifacts
 * [x] Updated Overall Status: clone-once is supported via `main`
-* [ ] Push `origin/main` with the monorepo commit
-* [ ] Optional later: Docker Compose; retire or archive legacy `backend` / `frontend` branches after teammates switch
+* [x] Optional local Docker Compose (`docker-compose.yml`) for Postgres + API
+* [ ] Push latest `main` (monorepo + deploy scaffolding) to `origin/main`
+* [ ] Optional later: retire or archive legacy `backend` / `frontend` branches after teammates switch
+
+---
+
+# 16/09/2026 — How to start and run the app (simple)
+
+Same guide as root `README.md`. Plain order of operations:
+
+1. **Clone `main`** (monorepo with `backend/` + `frontend/` + `docs/`).
+2. **Start PostgreSQL** and ensure database **`keystone`** exists on `127.0.0.1:5432`.
+3. **Terminal 1 — backend:** `cd backend` → copy `.env.example` to `.env` → `./mvnw spring-boot:run` (Windows: `.\mvnw.cmd spring-boot:run`). Wait until it is up on **http://localhost:8080**.
+4. **Terminal 2 — frontend:** `cd frontend` → copy `.env.example` to `.env` → `npm install` → `npm run dev`. Open **http://localhost:5173** (must be `localhost`, not `127.0.0.1`).
+5. **Sign in** with seed **MANAGER**: email `admin@keystone.dev` / password `Keystone@2026Admin!` (Flyway V2/V3).  
+   Then create **DISPATCHER** / **TECHNICIAN** users from the Users page (no other seed passwords exist).
+6. **Stop:** `Ctrl+C` in each terminal when done.
+
+You always need DB + API + UI. The website talks to the API; the API talks to PostgreSQL.
+
+---
+
+# 16/09/2026 — Deploy scaffolding (Render + Netlify)
+
+Simplest hosted path prepared in-repo, then applied live (same day).
+
+* [x] CORS from `CORS_ALLOWED_ORIGINS` (comma-separated)
+* [x] `backend/Dockerfile` + `.dockerignore`
+* [x] `render.yaml` Blueprint (free DB + Docker API)
+* [x] Root `netlify.toml` (build `frontend`, SPA redirects)
+* [x] `docker-compose.yml` for local DB+API parity
+* [x] README “How to deploy” steps
+* [x] Apply Render Blueprint and confirm `/actuator/health`
+* [x] Create Netlify site with `VITE_API_BASE_URL` → Render API
+* [x] Set Render `CORS_ALLOWED_ORIGINS` to the Netlify `https://` origin
+* [x] Verify login on the public Netlify URL
+
+---
+
+# 16/09/2026 — LIVE deploy: what we fixed, why, and how to log in
+
+Plain English record so nobody has to re-discover this the hard way.
+
+## What is live (working)
+
+| Piece | Where | URL / name |
+| --- | --- | --- |
+| Frontend (MFM UI) | Netlify | `https://mfmfsmp.netlify.app` |
+| Backend API | Render | `https://keystone-api-j2qc.onrender.com` |
+| Database | Render Postgres | service paired with the API (Blueprint) |
+| Health check | Render | `https://keystone-api-j2qc.onrender.com/actuator/health` → `{"status":"UP"}` |
+
+**GitHub note:** the canonical product repo is still `GandharMarathe/Project-KEYSTONE-…`.  
+Netlify was connected to the collaborator fork **`s0a1m0x01/Project-KEYSTONE-Field-Service-Management-Platform`** because the deployer did not own the upstream repo. That is fine — just remember: **push the fork** if you want Netlify to rebuild.
+
+Render was created from the Blueprint against the monorepo (`main`).
+
+## Seed / login credentials (do not lose these)
+
+### Straight answer: who can log in?
+
+App login roles (enum + Users UI): **MANAGER**, **DISPATCHER**, **TECHNICIAN**, **CUSTOMER**.
+
+| Who you asked about | Login email / password? | Reality |
+| --- | --- | --- |
+| **Admin / Manager** | `admin@keystone.dev` / `Keystone@2026Admin!` | **Same account.** Flyway seeds one **MANAGER**. That *is* the bootstrap admin. There is no separate “admin” user. |
+| **Technician** | **None seeded** | Create in **Users** while logged in as manager. You pick email + password. |
+| **Dispatcher** | **None seeded** | Same — create via Users. |
+| **Customer** (login role) | **None seeded** | Role exists (`CUSTOMER`) and can be created in Users, but there is **no** Flyway seed customer login. A “Customer” *business record* (company/site) is different from a `CUSTOMER` *user account*. |
+| **Extra admins** | Create more **MANAGER** users in Users | Only if you add them yourself. |
+
+### Seeded account (only one — local + hosted after Flyway)
+
+| Field | Value |
+| --- | --- |
+| Role | **MANAGER** (bootstrap admin) |
+| Email | `admin@keystone.dev` |
+| Password | `Keystone@2026Admin!` |
+| Source | `backend/.../V2__seed_initial_manager.sql` (+ `V3` email typo fix) |
+
+Use this on:
+
+* Local: `http://localhost:5173`
+* Hosted: `https://mfmfsmp.netlify.app/login`
+
+### Create the other roles (required for technician / customer / dispatcher logins)
+
+1. Sign in as **MANAGER** above.
+2. Open **Users** (manager-only screen).
+3. Add users. Suggested team convention (you choose real passwords and write them down):
+
+| Role | Example email | Password | Status |
+| --- | --- | --- | --- |
+| MANAGER | `admin@keystone.dev` | `Keystone@2026Admin!` | **Seeded — use this** |
+| DISPATCHER | e.g. `dispatch@keystone.dev` | **You choose** (≥ 8 chars) | Create in UI |
+| TECHNICIAN | e.g. `tech@keystone.dev` | **You choose** (≥ 8 chars) | Create in UI |
+| CUSTOMER | e.g. `cust1@keystone.dev` | **You choose** (≥ 8 chars) | Create in UI |
+
+There is a old local API test payload mentioning `cust1@keystone.dev` / `Keystone@2026Cust!` under `backend/user-customer-payload.json` — that is **not** a Flyway seed and is **not** guaranteed on the hosted Render DB unless someone POSTed it there. Prefer creating users in the live UI and recording passwords in a password manager.
+
+**Local Postgres** (compose / defaults — website login is separate): password `Keystone@2026Strong!`.  
+**Hosted Postgres** password: see gitignored `docs/render-env.local.md` or Render → Environment (never commit it).
+
+## What broke during deploy, and what we patched
+
+### 1) “Repo isn’t mine” (collaborator ownership)
+
+* **Problem:** Netlify/Render GitHub import needs access to the repo. Upstream is Gandhar’s.
+* **Fix used:** **Fork** to `s0a1m0x01/…`, import **the fork** on Netlify.
+* **Lesson:** browser GitHub login ≠ git CLI push auth. Prefer keeping the fork in sync, or get collaborator access later and point Netlify at upstream.
+
+### 2) Netlify first deploy — install failed
+
+* **Symptom:** `Failed during stage 'Install dependencies'` / exit code 1.
+* **Cause:** monorepo — `package.json` lives under `frontend/`, not repo root. Install ran in the wrong place until base/path was correct.
+* **Fix:** build from `frontend` (`netlify.toml` already has `base = "frontend"`). If the UI fights you on paths, use root-relative:
+
+  * Build: `npm --prefix frontend ci && npm --prefix frontend run build`
+  * Publish: `frontend/dist`
+  * Or: Base directory `frontend`, Publish `dist` (not `frontend/dist` stacked twice).
+
+### 3) Netlify then used **pnpm** and choked on lockfile
+
+* **Symptom (Netlify AI / logs):**  
+  `ERR_PNPM_OUTDATED_LOCKFILE` — `@playwright/test@^1.63.0` in `package.json` but missing from `pnpm-lock.yaml`.
+* **Why:** `frontend/` has **both** `package-lock.json` and `pnpm-lock.yaml`. Netlify saw `pnpm-lock.yaml` and ran **pnpm** with frozen lockfile.
+* **Fix:** regenerate lockfile (`pnpm install` in `frontend/`), commit:  
+  `ac826f0` — `fix: sync frontend pnpm lockfile with Playwright dependency`  
+  Pushed to the **fork** `main` so Netlify could rebuild.
+* **Lesson:** don’t leave two lockfiles out of sync. Prefer one package manager for CI, or keep both locks updated whenever `package.json` changes.
+
+### 4) UI loaded but login said “Unable to connect to the server”
+
+* **Symptom:** Netlify site OK; button stuck on “Signing in…” / refresh shows unable to connect.
+* **Not** “Netlify is down.” The React client throws that text when `fetch` fails (see `frontend/src/services/apiClient.ts`).
+* **Real cause:** Render API was **UP**, but **CORS** rejected the Netlify origin (`Invalid CORS request` on preflight).
+* **Fix:** Render → **keystone-api** → **Environment**:
+
+  * `CORS_ALLOWED_ORIGINS` = `https://mfmfsmp.netlify.app`  
+    (exact origin, **no** trailing slash)
+
+* Also required at build time on Netlify:
+
+  * `VITE_API_BASE_URL` = `https://keystone-api-j2qc.onrender.com`  
+    (Vite bakes this into the JS bundle — changing it later needs a **redeploy**)
+
+## Env vars checklist (keep these)
+
+### Netlify (Site → Environment variables)
+
+| Key | Value (current) |
+| --- | --- |
+| `VITE_API_BASE_URL` | `https://keystone-api-j2qc.onrender.com` |
+| `VITE_ENABLE_UI_DEV_ACCESS` | `false` (optional; toml default) |
+
+### Render (Web Service → Environment) — live values 16/09/2026
+
+Non-secret / shareable in git:
+
+| Key | Value |
+| --- | --- |
+| `CORS_ALLOWED_ORIGINS` | `https://mfmfsmp.netlify.app` |
+| `DB_HOST` | `dpg-dakt1ljm8hqs73ejb480-a` |
+| `DB_NAME` | `keystone_u1el` |
+| `DB_PORT` | `5432` |
+| `DB_USERNAME` | `keystone` |
+| `SERVER_PORT` | `8080` |
+
+**Secrets** (`DB_PASSWORD`, `JWT_SECRET`): live in Render → Environment. Also copied for local eyes only into **`docs/render-env.local.md`** (gitignored — will not be pushed). Do **not** paste those into `myLogs.md` or commit them.
+
+If this chat or a screenshot already leaked them, rotate `JWT_SECRET` / DB password in Render when you can.
+
+## Day-to-day after this (not hectic)
+
+1. Change code locally on monorepo `main`.
+2. Commit + push to the GitHub repo **Netlify/Render are watching** (today: the fork for Netlify).
+3. Wait for auto-deploy.
+4. Refresh the site.
+
+Only touch env/CORS again if the **Netlify URL** or **Render API URL** changes.
+
+## Free-tier reminder
+
+Render free web services **spin down** when idle. First request after idle can take ~30–60+ seconds — that can look like “can’t connect” once; wait and retry.
+
+---
+
+* [x] Live Netlify UI verified
+* [x] Live Render API health verified
+* [x] CORS fixed for Netlify origin
+* [x] pnpm lockfile sync committed (`ac826f0`)
+* [x] Seed manager credentials recorded in this log (not dropped)
+* [x] Explained how DISPATCHER / TECHNICIAN / CUSTOMER accounts are created (no seed passwords invented)
+* [x] Render env keys documented; secrets kept in gitignored `docs/render-env.local.md`

@@ -1,9 +1,29 @@
-### Ignore case ###
-.agents
-.cursor
-.idea
+### Local / IDE ###
+.agents/
+.cursor/
+.idea/
+*.iml
+
+### Secrets ###
 .env
 backend/.env
-backend/target
-# UI lives on the `frontend` branch. Do not commit a frontend/ folder here.
-/frontend/
+frontend/.env
+docs/render-env.local.md
+docs/*secrets*.local.md
+
+### Backend ###
+backend/target/
+backend/*.log
+
+### Frontend ###
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+frontend/blob-report/
+frontend/playwright/.cache/
+frontend/.pnpm-store/
+
+### OS ###
+.DS_Store
+Thumbs.db
