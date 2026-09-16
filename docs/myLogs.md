@@ -1049,11 +1049,13 @@ Work was done in the `frontend/` git worktree (`frontend` branch only). Backend 
 
 * Login, layouts, placeholders, `index.html` title → **MFM** + Field Service Management Platform
 * Company line remains Meridian Facilities Management
-* Seed credentials (`admin@keystone.dev`, `Keystone@…`) unchanged (backend Flyway)
+* Seed credentials unchanged (backend Flyway) — full values recorded in **LIVE deploy** section:
+  * MANAGER: `admin@keystone.dev` / `Keystone@2026Admin!`
+  * DISPATCHER / TECHNICIAN: not seeded; create via Users UI after manager login
 
 ## Deploy status (simplest path)
 
-Scaffolding is in the monorepo (not a live public URL until you click deploy on Render/Netlify):
+Scaffolding is in the monorepo. **Live deploy completed 16/09/2026** (see section below for URLs, patches, and login creds):
 
 * [x] `CORS_ALLOWED_ORIGINS` env (comma-separated) — production can allow the Netlify origin
 * [x] `backend/Dockerfile` for Render Docker runtime
@@ -1061,7 +1063,7 @@ Scaffolding is in the monorepo (not a live public URL until you click deploy on 
 * [x] Root `netlify.toml` for static UI build
 * [x] Optional `docker-compose.yml` (local Postgres + API)
 * [x] README deploy steps (Render → Netlify → CORS / `VITE_API_BASE_URL`)
-* [ ] Create Render + Netlify accounts, apply Blueprint, set env, verify login on the public URL
+* [x] Create Render + Netlify accounts, apply Blueprint, set env, verify login on the public URL
 
 ## Git commit plan for this session
 
@@ -1177,7 +1179,8 @@ Same guide as root `README.md`. Plain order of operations:
 2. **Start PostgreSQL** and ensure database **`keystone`** exists on `127.0.0.1:5432`.
 3. **Terminal 1 — backend:** `cd backend` → copy `.env.example` to `.env` → `./mvnw spring-boot:run` (Windows: `.\mvnw.cmd spring-boot:run`). Wait until it is up on **http://localhost:8080**.
 4. **Terminal 2 — frontend:** `cd frontend` → copy `.env.example` to `.env` → `npm install` → `npm run dev`. Open **http://localhost:5173** (must be `localhost`, not `127.0.0.1`).
-5. **Sign in** with local seed manager `admin@keystone.dev` / `Keystone@2026Admin!` (local Flyway seed only).
+5. **Sign in** with seed **MANAGER**: email `admin@keystone.dev` / password `Keystone@2026Admin!` (Flyway V2/V3).  
+   Then create **DISPATCHER** / **TECHNICIAN** users from the Users page (no other seed passwords exist).
 6. **Stop:** `Ctrl+C` in each terminal when done.
 
 You always need DB + API + UI. The website talks to the API; the API talks to PostgreSQL.
@@ -1186,7 +1189,7 @@ You always need DB + API + UI. The website talks to the API; the API talks to Po
 
 # 16/09/2026 — Deploy scaffolding (Render + Netlify)
 
-Simplest hosted path prepared in-repo. **Accounts / click-deploy still required on your side.**
+Simplest hosted path prepared in-repo, then applied live (same day).
 
 * [x] CORS from `CORS_ALLOWED_ORIGINS` (comma-separated)
 * [x] `backend/Dockerfile` + `.dockerignore`
@@ -1194,7 +1197,146 @@ Simplest hosted path prepared in-repo. **Accounts / click-deploy still required 
 * [x] Root `netlify.toml` (build `frontend`, SPA redirects)
 * [x] `docker-compose.yml` for local DB+API parity
 * [x] README “How to deploy” steps
-* [ ] Apply Render Blueprint and confirm `/actuator/health`
-* [ ] Create Netlify site with `VITE_API_BASE_URL` → Render API
-* [ ] Set Render `CORS_ALLOWED_ORIGINS` to the Netlify `https://` origin
-* [ ] Verify login on the public Netlify URL
+* [x] Apply Render Blueprint and confirm `/actuator/health`
+* [x] Create Netlify site with `VITE_API_BASE_URL` → Render API
+* [x] Set Render `CORS_ALLOWED_ORIGINS` to the Netlify `https://` origin
+* [x] Verify login on the public Netlify URL
+
+---
+
+# 16/09/2026 — LIVE deploy: what we fixed, why, and how to log in
+
+Plain English record so nobody has to re-discover this the hard way.
+
+## What is live (working)
+
+| Piece | Where | URL / name |
+| --- | --- | --- |
+| Frontend (MFM UI) | Netlify | `https://mfmfsmp.netlify.app` |
+| Backend API | Render | `https://keystone-api-j2qc.onrender.com` |
+| Database | Render Postgres | service paired with the API (Blueprint) |
+| Health check | Render | `https://keystone-api-j2qc.onrender.com/actuator/health` → `{"status":"UP"}` |
+
+**GitHub note:** the canonical product repo is still `GandharMarathe/Project-KEYSTONE-…`.  
+Netlify was connected to the collaborator fork **`s0a1m0x01/Project-KEYSTONE-Field-Service-Management-Platform`** because the deployer did not own the upstream repo. That is fine — just remember: **push the fork** if you want Netlify to rebuild.
+
+Render was created from the Blueprint against the monorepo (`main`).
+
+## Seed / login credentials (do not lose these)
+
+Flyway only seeds **one** user (MANAGER). Roles `DISPATCHER` and `TECHNICIAN` are **not** pre-seeded — create them in the UI after you sign in as manager.
+
+### Seeded account (works local + hosted after Flyway runs)
+
+| Field | Value |
+| --- | --- |
+| Role | **MANAGER** |
+| Email | `admin@keystone.dev` |
+| Password | `Keystone@2026Admin!` |
+| Source | `backend/.../V2__seed_initial_manager.sql` (+ `V3` email typo fix) |
+
+Use this on:
+
+* Local: `http://localhost:5173`
+* Hosted: `https://mfmfsmp.netlify.app/login`
+
+### Other roles (create yourself — there are no secret seed passwords for them)
+
+App roles in code: **MANAGER**, **DISPATCHER**, **TECHNICIAN**.
+
+1. Sign in as the seed **MANAGER** above.
+2. Open **Users** (manager-only).
+3. Create accounts you need, for example:
+
+| Role | Suggested email (example only) | Password | Who creates it |
+| --- | --- | --- | --- |
+| MANAGER | `admin@keystone.dev` | `Keystone@2026Admin!` | **Already seeded** |
+| DISPATCHER | e.g. `dispatch@keystone.dev` | **You choose** (min 8 chars in UI) | Manager via Users page |
+| TECHNICIAN | e.g. `tech@keystone.dev` | **You choose** (min 8 chars in UI) | Manager via Users page |
+
+Write down dispatcher/technician passwords somewhere safe for the team — the app does **not** store a second seed file for them.
+
+**Local DB password** (Postgres via compose / defaults — not a login for the website):
+
+* DB user/password pattern from compose / `application.properties` defaults: password `Keystone@2026Strong!` (local/dev only; Render uses its own managed DB password).
+
+## What broke during deploy, and what we patched
+
+### 1) “Repo isn’t mine” (collaborator ownership)
+
+* **Problem:** Netlify/Render GitHub import needs access to the repo. Upstream is Gandhar’s.
+* **Fix used:** **Fork** to `s0a1m0x01/…`, import **the fork** on Netlify.
+* **Lesson:** browser GitHub login ≠ git CLI push auth. Prefer keeping the fork in sync, or get collaborator access later and point Netlify at upstream.
+
+### 2) Netlify first deploy — install failed
+
+* **Symptom:** `Failed during stage 'Install dependencies'` / exit code 1.
+* **Cause:** monorepo — `package.json` lives under `frontend/`, not repo root. Install ran in the wrong place until base/path was correct.
+* **Fix:** build from `frontend` (`netlify.toml` already has `base = "frontend"`). If the UI fights you on paths, use root-relative:
+
+  * Build: `npm --prefix frontend ci && npm --prefix frontend run build`
+  * Publish: `frontend/dist`
+  * Or: Base directory `frontend`, Publish `dist` (not `frontend/dist` stacked twice).
+
+### 3) Netlify then used **pnpm** and choked on lockfile
+
+* **Symptom (Netlify AI / logs):**  
+  `ERR_PNPM_OUTDATED_LOCKFILE` — `@playwright/test@^1.63.0` in `package.json` but missing from `pnpm-lock.yaml`.
+* **Why:** `frontend/` has **both** `package-lock.json` and `pnpm-lock.yaml`. Netlify saw `pnpm-lock.yaml` and ran **pnpm** with frozen lockfile.
+* **Fix:** regenerate lockfile (`pnpm install` in `frontend/`), commit:  
+  `ac826f0` — `fix: sync frontend pnpm lockfile with Playwright dependency`  
+  Pushed to the **fork** `main` so Netlify could rebuild.
+* **Lesson:** don’t leave two lockfiles out of sync. Prefer one package manager for CI, or keep both locks updated whenever `package.json` changes.
+
+### 4) UI loaded but login said “Unable to connect to the server”
+
+* **Symptom:** Netlify site OK; button stuck on “Signing in…” / refresh shows unable to connect.
+* **Not** “Netlify is down.” The React client throws that text when `fetch` fails (see `frontend/src/services/apiClient.ts`).
+* **Real cause:** Render API was **UP**, but **CORS** rejected the Netlify origin (`Invalid CORS request` on preflight).
+* **Fix:** Render → **keystone-api** → **Environment**:
+
+  * `CORS_ALLOWED_ORIGINS` = `https://mfmfsmp.netlify.app`  
+    (exact origin, **no** trailing slash)
+
+* Also required at build time on Netlify:
+
+  * `VITE_API_BASE_URL` = `https://keystone-api-j2qc.onrender.com`  
+    (Vite bakes this into the JS bundle — changing it later needs a **redeploy**)
+
+## Env vars checklist (keep these)
+
+### Netlify (Site → Environment variables)
+
+| Key | Value (current) |
+| --- | --- |
+| `VITE_API_BASE_URL` | `https://keystone-api-j2qc.onrender.com` |
+| `VITE_ENABLE_UI_DEV_ACCESS` | `false` (optional; toml default) |
+
+### Render (Web Service → Environment)
+
+| Key | Value (current) |
+| --- | --- |
+| `CORS_ALLOWED_ORIGINS` | `https://mfmfsmp.netlify.app` |
+| DB / JWT / etc. | From Blueprint / Render Postgres link (do not commit secrets) |
+
+## Day-to-day after this (not hectic)
+
+1. Change code locally on monorepo `main`.
+2. Commit + push to the GitHub repo **Netlify/Render are watching** (today: the fork for Netlify).
+3. Wait for auto-deploy.
+4. Refresh the site.
+
+Only touch env/CORS again if the **Netlify URL** or **Render API URL** changes.
+
+## Free-tier reminder
+
+Render free web services **spin down** when idle. First request after idle can take ~30–60+ seconds — that can look like “can’t connect” once; wait and retry.
+
+---
+
+* [x] Live Netlify UI verified
+* [x] Live Render API health verified
+* [x] CORS fixed for Netlify origin
+* [x] pnpm lockfile sync committed (`ac826f0`)
+* [x] Seed manager credentials recorded in this log (not dropped)
+* [x] Explained how DISPATCHER / TECHNICIAN accounts are created (no seed passwords invented)
