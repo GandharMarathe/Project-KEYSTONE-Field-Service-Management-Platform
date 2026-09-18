@@ -196,3 +196,5 @@ Starts Postgres + API on `:8080`. Still run the UI with `cd frontend && npm run 
 - Production secrets rotation  
 
 Do not commit real production passwords or JWT secrets.
+
+Live: https://mfmfsmp.netlify.app
